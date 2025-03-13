@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DungeonExplorer
 {
+    /// <summary>
+    /// This class is used to store and manage the player's items.
+    /// </summary>
     public class Inventory
     {
         private List<Weapon> weapons = new List<Weapon>();
