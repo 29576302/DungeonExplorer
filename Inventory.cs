@@ -46,7 +46,9 @@ namespace DungeonExplorer
         {
             potions.Remove(potion);
         }
-        // Method returns the contents of the inventory.
+        /// <summary>
+        /// Method returns the contents of the inventory.
+        /// </summary> 
         public string Contents()
         {
             string contents = "";

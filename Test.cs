@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace DungeonExplorer
 {
+    /// <summary>
+    /// This class is used to test various instantiations and interactions in the game.
+    /// </summary> 
     class Test
     {
         public void TestHealth()
