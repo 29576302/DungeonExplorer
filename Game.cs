@@ -206,6 +206,11 @@ namespace DungeonExplorer
                 }
                 potions.Add(potion);
             }
+            // If no potions are generated, the list is set to null.
+            if (!potions.Any())
+            {
+                potions = null;
+            }
             return new Room(monster, potions, weapon);
         }
         // Method to make player and monster fight.
