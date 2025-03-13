@@ -5,12 +5,19 @@ using System.Collections.Generic;
 
 namespace DungeonExplorer
 {
+    /// <summary>
+    /// This class contains the Main method and is used to run the game. It also controls certain player actions.
+    /// </summary>
     internal class Game
     {
         private Player Player;
         private Room CurrentRoom;
         private bool Playing;
-
+        /// <summary>
+        /// This is the constructor for the Game class.
+        /// </summary>
+        /// <param name="player">This is the object used to represent the user's character.</param>
+        /// <param name="startingRoom">The room that the player starts in.</param>
         public Game(Player player, Room startingRoom)
         {
             Player = player;
@@ -18,6 +25,9 @@ namespace DungeonExplorer
             Playing = true;
 
         }
+        /// <summary>
+        /// This method is used to start the game and contains the main game loop.
+        /// </summary>
         public void Start()
         {
             // Basic game loop.
@@ -30,7 +40,9 @@ namespace DungeonExplorer
                 Console.WriteLine("Game Over!");
             }
         }
-        // Method that enables the user to interract with the game environment.
+        /// <summary>
+        /// Method that enables the user to interract with the game environment.
+        /// </summary>
         private void TakeAction()
         {
             // Displays the room description.
@@ -126,7 +138,11 @@ namespace DungeonExplorer
             Console.Write("Press Enter to continue.");
             Console.ReadLine();
         }
-        // Method to generate a new room. Randomly generates a monster, weapon, and potion, with the possibility of null values.
+        /// <summary>
+        /// Method to generate a new room. Randomly generates a monster, weapon, and potion,
+        /// with the possibility of null values.
+        /// </summary>
+        /// <returns></returns>
         private Room NewRoom()
         {
             Random random = new Random();
