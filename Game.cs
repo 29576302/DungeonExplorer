@@ -123,8 +123,8 @@ namespace DungeonExplorer
                     Player.Menu();
                     break;
                 }
-                // Generates a new room and assigns it to CurrentRoom.
-                else if (userChoice == "R")
+                // Generates a new room and assigns it to CurrentRoom (if there is no monster).
+                else if (userChoice == "R" && CurrentRoom.Monster == null)
                 {
                     CurrentRoom = NewRoom();
                     break;
@@ -198,13 +198,14 @@ namespace DungeonExplorer
                     }
                     potionName += $"Strength({potionDamageBonus})";
                 }
-                // If all stats are 0, the potion remains null.
+                potionName += " Potion";
+                // If all stats are 0, the potion is not added to the list.
                 if (!(potionHealthRestore == 0 && potionHealthBonus == 0 && potionDamageBonus == 0))
                 {
-                    potionName += " Potion";
+                    
                     potion = new Potion(potionName, potionDamageBonus, potionHealthRestore, potionHealthBonus);
+                    potions.Add(potion);
                 }
-                potions.Add(potion);
             }
             // If no potions are generated, the list is set to null.
             if (!potions.Any())
