@@ -48,7 +48,7 @@ namespace DungeonExplorer
         /// AttackTarget method uses a d20 roll to determine damage dealt.
         /// </summary>
         /// <param name="target">The creature that this attack targets.</param>
-        public virtual void AttackTarget(Creature target)
+        public void AttackTarget(Creature target)
         {
             Random dice = new Random();
             int damage = (Attack * dice.Next(1,21)) / 20; //Attack value acts as a 'modifier' for the d20 roll.
