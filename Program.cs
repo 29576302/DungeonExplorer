@@ -8,6 +8,9 @@ namespace DungeonExplorer
 {
     internal class Program
     {
+        /// <summary>
+        /// Main method that executes when the program starts.
+        /// </summary>
         static void Main(string[] args)
         {
             Console.WriteLine("========Welcome to DUNGEON EXPLORER!========\n"); // Game title
