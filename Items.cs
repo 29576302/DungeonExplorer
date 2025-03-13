@@ -45,8 +45,10 @@ namespace DungeonExplorer
         /// <summary>
         /// This constructor is used to create a potion with a name, damage, health restore, and health bonus.
         /// </summary>
-        /// <param name="name">Inherited from the Item class. It is the string that is displayed when the game refers to the potion.</param>
-        /// <param name="damage">Inherited from the Item class. It is the amount of damage the potion adds to the player's attack.</param>
+        /// <param name="name">Inherited from the Item class.
+        /// It is the string that is displayed when the game refers to the potion.</param>
+        /// <param name="damage">Inherited from the Item class.
+        /// It is the amount of damage the potion adds to the player's attack.</param>
         /// <param name="healthRestore">The amount of health restored by the potion (cannot exceed max health).</param>
         /// <param name="healthBonus">The amount of health added to the player's max health.</param>
         public Potion(string name, int damage, int healthRestore, int healthBonus) : base(name, damage)

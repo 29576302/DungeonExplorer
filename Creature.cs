@@ -3,7 +3,9 @@ using System.Collections.Generic;
 
 namespace DungeonExplorer
 {
-    // This class forms the base of the Player and Monster classes.
+    /// <summary>
+    /// This class forms the base of the Player and Monster classes.
+    /// </summary>
     public abstract class Creature
     {
         public string Name { get; private set; }
@@ -12,7 +14,13 @@ namespace DungeonExplorer
         public int Attack { get; private set; }
         public int Level { get; private set; }
         public bool IsAlive { get; private set; }
-        // Constructor for the Creature class.
+        /// <summary>
+        /// Constructor for the Creature class.
+        /// </summary>
+        /// <param name="name">The string that is displayed when the game refers to the creature.</param>
+        /// <param name="health">The HP/health points of the creature.</param>
+        /// <param name="attack">The starting attack/damage attribute of the creature.</param>
+        /// <param name="level">The level of the creature.</param>
         public Creature(string name, int health, int attack, int level) 
         {
             Name = name;
@@ -36,7 +44,10 @@ namespace DungeonExplorer
         {
             CurrentHealth = health;
         }
-        // AttackTarget method uses a d20 roll to determine damage dealt.
+        /// <summary>
+        /// AttackTarget method uses a d20 roll to determine damage dealt.
+        /// </summary>
+        /// <param name="target">The creature that this attack targets.</param>
         public virtual void AttackTarget(Creature target)
         {
             Random dice = new Random();
@@ -55,25 +66,41 @@ namespace DungeonExplorer
             }
 
         }
-        // Abstract method for potion use, as monsters do not have an inventory.
+        /// <summary>
+        /// Abstract method for potion use, as monsters do not have an inventory.
+        /// </summary>
+        /// <param name="potion">The potion that will be used by the creature.</param>
         public abstract void UsePotion(Potion potion);
     }
-    // Player class
+    /// <summary>
+    /// Player class inherits from Creature. This class is used to represent the player character.
+    /// </summary>
     public class Player : Creature
     {
         public Weapon EquippedWeapon { get; private set; }
         public Inventory PlayerInventory = new Inventory();
-        // Constructor for the Player class.
+        /// <summary>
+        /// Constructor for the Player class.
+        /// </summary>
+        /// <param name="name">Inherited from Creature. Same use as described above.</param>
+        /// <param name="health">Inherited from Creature. Same use as described above.</param>
+        /// <param name="attack">Inherited from Creature. Same use as described above.</param>
+        /// <param name="level">Inherited from Creature. Same use as described above.</param>
         public Player(string name, int health, int attack, int level) : base(name, health, attack, level)
         {
         }
+        /// <summary>
+        /// UsePotion method allows the player to use a potion from their inventory.
+        /// </summary>
+        /// <param name="potion">The potion that is used from the player's inventory.</param>
         public override void UsePotion(Potion potion)
         {
             // Potion is removed from the player's inventory.
             PlayerInventory.RemovePotion(potion);
             // Potion effects are applied to the player's stats.
             SetMaxHealth(MaxHealth + potion.HealthBonus);
-            // If the player's (CurrentHealth + potion.HealthRestore) > MaxHealth, the player's health is set to MaxHealth.
+            // If the player's (CurrentHealth + potion.HealthRestore) > MaxHealth,
+            // the player's health is set to MaxHealth.
             // This is done to avoid the player's health exceeding their max health.
             if (CurrentHealth + potion.HealthRestore > MaxHealth)
             {
@@ -85,7 +112,9 @@ namespace DungeonExplorer
             }
             SetAttack(Attack + potion.Damage);
         }
-        // Menu method allows the player to check stats and use inventory.
+        /// <summary>
+        /// Menu method allows the player to check stats and use inventory.
+        /// </summary>
         public void Menu()
         {
             while (true)
@@ -210,9 +239,15 @@ namespace DungeonExplorer
                 }
             }
         }
+        /// <summary>
+        /// This method is used to equip a weapon from the player's inventory,
+        /// while also moving the currently eqipped weapon into the inventory.
+        /// </summary>
+        /// <param name="weapon">The weapon that is equipped from the player inventory.</param>
         public void EquipWeapon(Weapon weapon)
         {
-            // If the player has a weapon equipped, this code makes sure that it is not overriden when a new weapon is equipped.
+            // If the player has a weapon equipped,
+            // this code makes sure that it is not overriden when a new weapon is equipped.
             if (EquippedWeapon == null)
             {
                 EquippedWeapon = weapon;
@@ -228,6 +263,9 @@ namespace DungeonExplorer
                 PlayerInventory.RemoveWeapon(weapon);
             }
         }
+        /// <summary>
+        /// This method is used to uneqip the player's weapon.
+        /// </summary>
         public void UnequipWeapon()
         {
             // The player's equipped weapon is checked again to avoid exceptions.
@@ -239,14 +277,19 @@ namespace DungeonExplorer
             }
         }
     }
-    // Monster subclass
+    /// <summary>
+    /// Monster subclass
+    /// </summary>
     public class Monster : Creature
     {
         public Monster(string name, int health, int attack, int level) : base(name, health, attack, level)
         {
         }
-        // Same as Player's UsePotion method, except the potion is not removed from inventory.
-        // This is because Monsters do not have an inventory.
+        /// <summary>
+        /// Same as Player's UsePotion method, except the potion is not removed from inventory.
+        /// This is because Monsters do not have an inventory.
+        /// </summary>
+        /// <param name="potion">The potion used by the monster.</param>
         public override void UsePotion(Potion potion)
         {
             SetMaxHealth(MaxHealth + potion.HealthBonus);
