@@ -10,19 +10,20 @@ namespace DungeonExplorer
     /// </summary>
     internal class Game
     {
-        private Player Player;
-        private Room CurrentRoom;
-        private bool Playing;
+        private Player player;
+        private Room currentRoom;
+        private bool playing;
+        private static Random random = new Random();
         /// <summary>
         /// This is the constructor for the Game class.
         /// </summary>
-        /// <param name="player">This is the object used to represent the user's character.</param>
+        /// <param name="startingPlayer">This is the object used to represent the user's character.</param>
         /// <param name="startingRoom">The room that the player starts in.</param>
-        public Game(Player player, Room startingRoom)
+        public Game(Player startingPlayer, Room startingRoom)
         {
-            Player = player;
-            CurrentRoom = startingRoom;
-            Playing = true;
+            player = startingPlayer;
+            currentRoom = startingRoom;
+            playing = true;
 
         }
         /// <summary>
@@ -31,11 +32,11 @@ namespace DungeonExplorer
         public void Start()
         {
             // Basic game loop.
-            while (Playing)
+            while (playing)
             {
                 TakeAction();
             }
-            if (!Playing)
+            if (!playing)
             {
                 Console.WriteLine("Game Over!");
             }
@@ -46,24 +47,24 @@ namespace DungeonExplorer
         private void TakeAction()
         {
             // Displays the room description.
-            Console.WriteLine($"\n{CurrentRoom.GetDescription()}");
+            Console.WriteLine($"\n{currentRoom.GetDescription()}");
             // Calculates and displays the player's available actions.
             string actions = "\nActions: \nM) Menu";
-            if (CurrentRoom.Monster == null)
+            if (currentRoom.Monster == null)
             {
-                if (CurrentRoom.Potions != null)
+                if (currentRoom.Potions != null)
                 {
-                    actions += "\nP) Take potions.";
+                    actions += "\nP) Take potion(s).";
                 }
-                if (CurrentRoom.Weapon != null)
+                if (currentRoom.Weapon != null)
                 {
-                    actions += $"\nW) Take {CurrentRoom.Weapon.Name}";
+                    actions += $"\nW) Take {currentRoom.Weapon.Name}";
                 }
                 actions += "\nR) Explore a new room";
             }
             else
             {
-                actions += $"\nA) Attack {CurrentRoom.Monster.Name}";
+                actions += $"\nA) Attack {currentRoom.Monster.Name}";
             }
             Console.WriteLine(actions);
             // Asks for and validates user input. While true loop until a valid input is given.
@@ -73,14 +74,14 @@ namespace DungeonExplorer
                 // Converts userChoice input to upper to avoid case sensitivity.
                 string userChoice = Console.ReadLine().ToUpper().Trim();
                 // The user is only allowed to take a potion if there is one or more in the room (and if the monster is dead).
-                if (userChoice == "P" && CurrentRoom.Potions != null && CurrentRoom.Monster == null)
+                if (userChoice == "P" && currentRoom.Potions != null && currentRoom.Monster == null)
                 {
                     Console.WriteLine("Which potion would you like to take?");
                     // Generates a list of available potions in the room.
                     string availablePotions = "";
-                    for (int i = 0; i < CurrentRoom.Potions.Count; i++)
+                    for (int i = 0; i < currentRoom.Potions.Count; i++)
                     {
-                        availablePotions += $"{i + 1}) {CurrentRoom.Potions[i].Name}\n";
+                        availablePotions += $"{i + 1}) {currentRoom.Potions[i].Name}\n";
                     }
                     Console.Write(availablePotions);
                     // Try catch block to validate user input.
@@ -90,43 +91,46 @@ namespace DungeonExplorer
                         {
                             Console.Write(">");
                             int potionChoice = Convert.ToInt32(Console.ReadLine());
-                            Player.PlayerInventory.AddPotion(CurrentRoom.Potions[potionChoice - 1]);
-                            Console.WriteLine($"You take the {CurrentRoom.Potions[potionChoice - 1].Name}.");
-                            CurrentRoom.RemovePotion(potionChoice - 1);
+                            player.PlayerInventory.AddPotion(currentRoom.Potions[potionChoice - 1]);
+                            Console.WriteLine($"You take the {currentRoom.Potions[potionChoice - 1].Name}.");
+                            currentRoom.RemovePotion(potionChoice - 1);
                             break;
                         }
-                        catch
+                        catch (Exception ex)
                         {
-                            Console.WriteLine("Please enter a valid input.");
+                            if (ex is FormatException || ex is ArgumentOutOfRangeException)
+                            {
+                                Console.WriteLine("Please enter a valid input.");
+                            }
                         }
                     }
                     break;
                 }
                 // Similarly to the potion statement,
                 // the user is only allowed to take a weapon if one is present in the room (and if the monster is dead).
-                else if (userChoice == "W" && CurrentRoom.Weapon != null && CurrentRoom.Monster == null)
+                else if (userChoice == "W" && currentRoom.Weapon != null && currentRoom.Monster == null)
                 {
-                    Player.PlayerInventory.AddWeapon(CurrentRoom.Weapon);
-                    Console.WriteLine($"You take the {CurrentRoom.Weapon.Name}.");
-                    CurrentRoom.RemoveWeapon();
+                    player.PlayerInventory.AddWeapon(currentRoom.Weapon);
+                    Console.WriteLine($"You take the {currentRoom.Weapon.Name}.");
+                    currentRoom.RemoveWeapon();
                     break;
                 }
                 // The user is only allowed to attack the Monster if it is present in the room.
-                else if (userChoice == "A" && CurrentRoom.Monster != null)
+                else if (userChoice == "A" && currentRoom.Monster != null)
                 {
-                    FightMonster(CurrentRoom.Monster);
+                    FightMonster(currentRoom.Monster);
                     break;
                 }
                 // Opens the player menu, where inventory and stats can be viewed.
                 else if (userChoice == "M")
                 {
-                    Player.Menu();
+                    player.Menu();
                     break;
                 }
                 // Generates a new room and assigns it to CurrentRoom (if there is no monster).
-                else if (userChoice == "R" && CurrentRoom.Monster == null)
+                else if (userChoice == "R" && currentRoom.Monster == null)
                 {
-                    CurrentRoom = NewRoom();
+                    currentRoom = NewRoom();
                     break;
                 }
                 else
@@ -145,7 +149,6 @@ namespace DungeonExplorer
         /// <returns></returns>
         private Room NewRoom()
         {
-            Random random = new Random();
             // A list of monsters and weapons to be randomly selected from.
             Monster[] monsters = new Monster[]
             {
@@ -217,45 +220,45 @@ namespace DungeonExplorer
         // Method to make player and monster fight.
         private void FightMonster(Monster monster)
         {
-            while (Player.IsAlive)
+            while (player.IsAlive)
             {
                 // If no weapon is equipped, the players's weapon is named bare hands.
                 string weapon = "your ";
-                if (Player.EquippedWeapon == null)
+                if (player.EquippedWeapon == null)
                 {
                     weapon += "bare hands";
                 }
                 else
                 {
-                    weapon += Player.EquippedWeapon.Name;
+                    weapon += player.EquippedWeapon.Name;
                 }
                 Console.WriteLine($"\nYou attack the {monster.Name} with {weapon}!");
-                Player.AttackTarget(CurrentRoom.Monster);
+                player.AttackTarget(currentRoom.Monster);
                 Console.ReadKey(); //ReadKey used to segment fight sequence.
                 // If the monster is alive, it attacks the player.
-                if (CurrentRoom.Monster.IsAlive)
+                if (currentRoom.Monster.IsAlive)
                 {
                     Console.WriteLine($"\nThe {monster.Name} attacks you!");
-                    CurrentRoom.Monster.AttackTarget(Player);
+                    currentRoom.Monster.AttackTarget(player);
                     Console.ReadKey();
                 }
                 // If the monster is dead, the monster is removed from the room.
                 else
                 {
                     Console.WriteLine($"\nYou defeat the {monster.Name}!");
-                    CurrentRoom.RemoveMonster();
+                    currentRoom.RemoveMonster();
                     break;
                 }
             }
             // Checks to see if the player is still alive after the fight sequence.
-            if (!Player.IsAlive)
+            if (!player.IsAlive)
             {
                 Console.WriteLine("\nYou have died.");
-                Playing = false; // Main game loop ends if player dies.
+                playing = false; // Main game loop ends if player dies.
             }
             else
             {
-                Console.WriteLine($"You have {Player.CurrentHealth} health remaining.");
+                Console.WriteLine($"You have {player.CurrentHealth} health remaining.");
             }
         }
     }

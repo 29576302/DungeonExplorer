@@ -14,6 +14,7 @@ namespace DungeonExplorer
         public int Attack { get; private set; }
         public int Level { get; private set; }
         public bool IsAlive { get; private set; }
+        private static Random dice = new Random();
         /// <summary>
         /// Constructor for the Creature class.
         /// </summary>
@@ -50,7 +51,6 @@ namespace DungeonExplorer
         /// <param name="target">The creature that this attack targets.</param>
         public void AttackTarget(Creature target)
         {
-            Random dice = new Random();
             int damage = (Attack * dice.Next(1,21)) / 20; //Attack value acts as a 'modifier' for the d20 roll.
             Console.WriteLine($"The attack deals {damage} damage.");
             if (target.CurrentHealth - damage > 0)
