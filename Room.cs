@@ -10,7 +10,7 @@ namespace DungeonExplorer
         public Monster Monster { get; private set; }
         public List<Potion> Potions { get; private set; }
         public Weapon Weapon { get; private set; }
-        private string Description; // Accessed through methods detailed below.
+        private string description; // Accessed through methods detailed below.
         /// <summary>
         /// This is the constructor for the Room class.
         /// </summary>
@@ -23,14 +23,14 @@ namespace DungeonExplorer
             Monster = monster;
             Potions = potions;
             Weapon = weapon;
-            Description = "";
+            description = "";
         }
         /// <summary>
         /// Generates a description of the room.
         /// </summary>
         public void CreateDescription()
         {
-            string description = "Room Contents:";
+            description = "Room Contents:";
             description += "\nMonster: ";
             if (Monster == null)
             {
@@ -65,7 +65,6 @@ namespace DungeonExplorer
             {
                 description += Weapon.Name;
             }
-            Description = description;
         }
         /// <summary>
         /// Returns the description of the room after making sure that it is up to date with the current contents.
@@ -74,7 +73,7 @@ namespace DungeonExplorer
         public string GetDescription()
         {
             CreateDescription();
-            return Description;
+            return description;
         }
         // Methods to remove items/monsters from the room.
         public void RemoveWeapon()
