@@ -80,15 +80,19 @@ namespace DungeonExplorer
     }
     public class Weapon : Item
     {
-        public Weapon(string name, int damage) : base(name, damage)
+        public float Speed { get; private set; }
+        public Weapon(string name, int damage, float speed) : base(name, damage)
         {
+            Speed = speed;
         }
         /// <summary>
         /// Weapon specific override of CreateDescription.
         /// </summary>
         public override void CreateDescription()
         {
-            description = $"Name: {Name}\nDamage: {Damage}";
+            // If the speed is >1.33, the weapon is fast, if the speed is <0.66 the weapon is slow, otherwise the weapon has a normal speed.
+            string speedDescription = Speed >+ 1.33 ? "Fast" : Speed <+ 0.66 ? "Slow" : "Normal";
+            description = $"Name: {Name}\nDamage: {Damage}\nSpeed: {speedDescription}";
         }
     }
 }

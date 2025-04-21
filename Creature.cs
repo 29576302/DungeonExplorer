@@ -8,11 +8,13 @@ namespace DungeonExplorer
     /// </summary>
     public abstract class Creature
     {
-        public string Name { get; private set; }
-        public int MaxHealth { get; private set; }
-        public int CurrentHealth { get; private set; }
-        public int Attack { get; private set; }
-        public int Level { get; private set; }
+        public string Name { get; protected set; }
+        public int MaxHealth { get; protected set; }
+        public int CurrentHealth { get; protected set; }
+        public int Attack { get; protected set; }
+        // Speed is abstract, as player speed is affected by items.
+        public abstract float Speed { get; protected set; } 
+        public int Level { get; protected set; }
         public bool IsAlive { get; private set; }
         private static Random dice = new Random();
         /// <summary>
@@ -32,7 +34,9 @@ namespace DungeonExplorer
             IsAlive = true;
 
         }
-        // Protected methods allow subclasses to modify stats for potion use.
+        protected Creature() { } // Protected constructor for Monster subclasses to use.
+        // Protected methods allow subclasses to modify stats for item use.
+        // REMOVE THIS LATER
         protected void SetAttack(int attack)
         {
             Attack = attack;
@@ -79,12 +83,24 @@ namespace DungeonExplorer
     {
         public Weapon EquippedWeapon { get; private set; }
         public Inventory PlayerInventory = new Inventory();
+        private float baseSpeed = 1;
+        /// <summary>
+        /// Speed property is overridden to allow for the player to have a base speed of 1,
+        /// Speed is calculated by adding the base speed to the equipped weapon's speed.
+        /// </summary>
+        public override float Speed
+        {
+            get {return baseSpeed * (EquippedWeapon?.Speed?? 1); }
+            protected set { baseSpeed = value / (EquippedWeapon?.Speed?? 1); }
+        }
         /// <summary>
         /// Constructor for the Player class.
         /// </summary>
         /// <param name="name">Inherited from Creature. Same use as described above.</param>
         /// <param name="health">Inherited from Creature. Same use as described above.</param>
         /// <param name="attack">Inherited from Creature. Same use as described above.</param>
+        /// <param name="speed">The speed at which a creature attacks. Speed can be at any point between 0<speed<=2,
+        /// where speed=1 is the starting speed for a player.</param>
         /// <param name="level">Inherited from Creature. Same use as described above.</param>
         public Player(string name, int health, int attack, int level) : base(name, health, attack, level)
         {
@@ -280,11 +296,12 @@ namespace DungeonExplorer
     /// <summary>
     /// Monster subclass
     /// </summary>
-    public class Monster : Creature
+    public abstract class Monster : Creature
     {
         public Monster(string name, int health, int attack, int level) : base(name, health, attack, level)
         {
         }
+        protected Monster() : base() { } // Protected constructor for Monster subclasses to use.
         /// <summary>
         /// Same as Player's UsePotion method, except the potion is not removed from inventory.
         /// This is because Monsters do not have an inventory.
@@ -302,6 +319,59 @@ namespace DungeonExplorer
                 SetCurrentHealth(CurrentHealth + potion.HealthRestore);
             }
             SetAttack(Attack + potion.HealthBonus);
+        }
+    }
+
+    public class Goblin : Monster
+    {
+        public override float Speed { get; protected set; }
+        public Goblin()
+        {
+            Name = "Goblin";
+            MaxHealth = 10;
+            CurrentHealth = MaxHealth;
+            Attack = 5;
+            Speed = 1.5f;
+            Level = 1;
+        }
+    }
+    public class Orc : Monster
+    {
+        public override float Speed { get; protected set; }
+        public Orc()
+        {
+            Name = "Orc";
+            MaxHealth = 20;
+            CurrentHealth = MaxHealth;
+            Attack = 10;
+            Speed = 1;
+            Level = 3;
+        }
+    }
+    public class Troll : Monster
+    {
+        public override float Speed { get; protected set; }
+        public Troll()
+        {
+            Name = "Troll";
+            MaxHealth = 30;
+            CurrentHealth = MaxHealth;
+            Attack = 15;
+            Speed = 0.5f;
+            Level = 5;
+        }
+    }
+    public class Dragon : Monster
+    {
+        public override float Speed { get; protected set; }
+        public Dragon()
+        {
+            Name = "Dragon";
+            MaxHealth = 50;
+            CurrentHealth = MaxHealth;
+            Attack = 15;
+            Speed = 1;
+            Level = 10;
         }
     }
 

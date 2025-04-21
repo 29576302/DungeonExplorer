@@ -102,6 +102,10 @@ namespace DungeonExplorer
                             {
                                 Console.WriteLine("Please enter a valid input.");
                             }
+                            else
+                            {
+                                throw;
+                            }
                         }
                     }
                     break;
@@ -152,17 +156,16 @@ namespace DungeonExplorer
             // A list of monsters and weapons to be randomly selected from.
             Monster[] monsters = new Monster[]
             {
-                new Monster("Goblin", 10, 5, 1),
-                new Monster("Hobgoblin", 15, 8, 2),
-                new Monster("Orc", 20, 10, 3),
-                new Monster("Troll", 30, 15, 5),
+                new Goblin(),
+                new Orc(),
+                new Troll(),
                 null
             };
             Weapon[] weapons = new Weapon[]
             {
-                new Weapon("Dagger", 5),
-                new Weapon("Sword", 10),
-                new Weapon("Great Sword", 15),
+                new Weapon("Dagger", 5, 2),
+                new Weapon("Sword", 10, 1),
+                new Weapon("Great Sword", 15, 0.5f),
                 null
             };
             Monster monster = monsters[random.Next(0, monsters.Length)];
