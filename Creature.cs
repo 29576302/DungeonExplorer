@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace DungeonExplorer
 {
@@ -9,13 +10,13 @@ namespace DungeonExplorer
     public abstract class Creature
     {
         public string Name { get; protected set; }
-        public int MaxHealth { get; protected set; }
-        public int CurrentHealth { get; protected set; }
-        public int Attack { get; protected set; }
-        // Speed is abstract, as player speed is affected by items.
-        public abstract float Speed { get; protected set; } 
-        public int Level { get; protected set; }
-        public bool IsAlive { get; private set; }
+        protected CreatureStats Stats;
+        public int MaxHealth => Stats.MaxHealth;
+        public int CurrentHealth => Stats.CurrentHealth;
+        public int Attack => Stats.Attack;
+        public abstract float Speed { get; protected set; }
+        public int Level => Stats.Level;
+        public bool IsAlive => Stats.CurrentHealth > 0;
         private static Random dice = new Random();
         /// <summary>
         /// Constructor for the Creature class.
@@ -27,27 +28,25 @@ namespace DungeonExplorer
         public Creature(string name, int health, int attack, int level) 
         {
             Name = name;
-            MaxHealth = health;
-            CurrentHealth = health;
-            Attack = attack;
-            Level = level;
-            IsAlive = true;
+            Stats = new CreatureStats(health, attack, 1, level);
 
         }
-        protected Creature() { } // Protected constructor for Monster subclasses to use.
+        protected Creature() // Protected constructor for Monster subclasses to use.
+        {
+            Stats = new CreatureStats(0, 0, 1, 1);
+        }
         // Protected methods allow subclasses to modify stats for item use.
-        // REMOVE THIS LATER
         protected void SetAttack(int attack)
         {
-            Attack = attack;
+            Stats.ModifyAttack(attack - Attack);
         }
         protected void SetMaxHealth(int health)
         {
-            MaxHealth = health;
+            Stats.ModifyMaxHealth(health - MaxHealth);
         }
         protected void SetCurrentHealth(int health)
         {
-            CurrentHealth = health;
+            Stats.ModifyCurrentHealth(health - CurrentHealth);
         }
         /// <summary>
         /// AttackTarget method uses a d20 roll to determine damage dealt.
@@ -55,20 +54,9 @@ namespace DungeonExplorer
         /// <param name="target">The creature that this attack targets.</param>
         public void AttackTarget(Creature target)
         {
-            int damage = (Attack * dice.Next(1,21)) / 20; //Attack value acts as a 'modifier' for the d20 roll.
+            int damage = (Attack * dice.Next(1, 21)) / 20;
             Console.WriteLine($"The attack deals {damage} damage.");
-            if (target.CurrentHealth - damage > 0)
-            {
-                target.CurrentHealth -= damage;
-            }
-            // If the target's (current health - damage) <= 0, the target's health is set to 0
-            // and the IsAlive bool is set to false (effectively 'killing' the target.
-            else
-            {
-                target.CurrentHealth = 0; 
-                target.IsAlive = false;
-            }
-
+            target.Stats.ModifyCurrentHealth(-damage);
         }
         /// <summary>
         /// Abstract method for potion use, as monsters do not have an inventory.
@@ -324,54 +312,70 @@ namespace DungeonExplorer
 
     public class Goblin : Monster
     {
-        public override float Speed { get; protected set; }
+        public override float Speed
+        {
+            get => Stats.Speed;
+            protected set => Stats.ModifySpeed(value - Stats.Speed);
+        }
         public Goblin()
         {
             Name = "Goblin";
-            MaxHealth = 10;
-            CurrentHealth = MaxHealth;
-            Attack = 5;
+            Stats.ModifyMaxHealth(10);
+            Stats.ModifyCurrentHealth(10);
+            Stats.ModifyAttack(5);
             Speed = 1.5f;
-            Level = 1;
+            Stats.ModifyLevel(1);
         }
     }
     public class Orc : Monster
     {
-        public override float Speed { get; protected set; }
+        public override float Speed
+        {
+            get => Stats.Speed;
+            protected set => Stats.ModifySpeed(value - Stats.Speed);
+        }
         public Orc()
         {
             Name = "Orc";
-            MaxHealth = 20;
-            CurrentHealth = MaxHealth;
-            Attack = 10;
-            Speed = 1;
-            Level = 3;
+            Stats.ModifyMaxHealth(20);
+            Stats.ModifyCurrentHealth(20);
+            Stats.ModifyAttack(10);
+            Speed = 1.0f;
+            Stats.ModifyLevel(3);
         }
     }
     public class Troll : Monster
     {
-        public override float Speed { get; protected set; }
+        public override float Speed
+        {
+            get => Stats.Speed;
+            protected set => Stats.ModifySpeed(value - Stats.Speed);
+        }
         public Troll()
         {
             Name = "Troll";
-            MaxHealth = 30;
-            CurrentHealth = MaxHealth;
-            Attack = 15;
+            Stats.ModifyMaxHealth(30);
+            Stats.ModifyCurrentHealth(MaxHealth);
+            Stats.ModifyAttack(15);
             Speed = 0.5f;
-            Level = 5;
+            Stats.ModifyLevel(5);
         }
     }
     public class Dragon : Monster
     {
-        public override float Speed { get; protected set; }
+        public override float Speed
+        {
+            get => Stats.Speed;
+            protected set => Stats.ModifySpeed(value - Stats.Speed);
+        }
         public Dragon()
         {
             Name = "Dragon";
-            MaxHealth = 50;
-            CurrentHealth = MaxHealth;
-            Attack = 15;
+            Stats.ModifyMaxHealth(50);
+            Stats.ModifyCurrentHealth(MaxHealth);
+            Stats.ModifyAttack(15);
             Speed = 1;
-            Level = 10;
+            Stats.ModifyLevel(10);
         }
     }
 
