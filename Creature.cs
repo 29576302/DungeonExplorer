@@ -7,7 +7,7 @@ namespace DungeonExplorer
     /// <summary>
     /// This class forms the base of the Player and Monster classes.
     /// </summary>
-    public abstract class Creature
+    public abstract class Creature : ICanAttack
     {
         public string Name { get; protected set; }
         protected CreatureStats Stats;

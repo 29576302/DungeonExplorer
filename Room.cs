@@ -5,7 +5,7 @@ namespace DungeonExplorer
     /// <summary>
     /// This class is used to create rooms that the player explores.
     /// </summary>
-    public class Room
+    public class Room : IDescribable
     {
         public Monster Monster { get; private set; }
         public List<Potion> Potions { get; private set; }

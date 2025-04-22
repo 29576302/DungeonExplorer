@@ -72,6 +72,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CreatureStats.cs" />
+    <Compile Include="ICanAttack.cs" />
+    <Compile Include="IDescribable.cs" />
     <Compile Include="Test.cs" />
     <Compile Include="Inventory.cs" />
     <Compile Include="Items.cs" />

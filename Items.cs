@@ -9,7 +9,7 @@ namespace DungeonExplorer
     /// <summary>
     /// This class forms the base of the Potion and Weapon classes.
     /// </summary>
-    public abstract class Item
+    public abstract class Item : IDescribable
     {
         public string Name { get; private set; }
         public int Damage { get; private set; }
