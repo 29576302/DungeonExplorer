@@ -291,10 +291,11 @@ namespace DungeonExplorer
     /// </summary>
     public abstract class Monster : Creature
     {
-        public Monster(string name, int health, int attack, int level) : base(name, health, attack, level)
+        public bool Fled {get; protected set; }
+        protected Monster() : base() // Protected constructor for Monster subclasses to use.
         {
-        }
-        protected Monster() : base() { } // Protected constructor for Monster subclasses to use.
+            Fled = false;
+        } 
         /// <summary>
         /// Same as Player's UsePotion method, except the potion is not removed from inventory.
         /// This is because Monsters do not have an inventory.
@@ -322,6 +323,7 @@ namespace DungeonExplorer
             if (dice.Next(0, 3) == 0)
             {
                 Console.WriteLine($"\nThe {Name} flees before you're able to finish it off.");
+                Fled = true;
                 SetCurrentHealth(0);
             }
         }

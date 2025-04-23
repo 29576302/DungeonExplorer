@@ -306,7 +306,11 @@ namespace DungeonExplorer
                 // If the monster is dead, the monster is removed from the room.
                 else
                 {
-                    Console.WriteLine($"\nYou defeat the {monster.Name}!");
+                    // If the monster fled, the player does not get this victory message.
+                    if (!monster.Fled)
+                    {
+                        Console.WriteLine($"\nYou defeat the {monster.Name}!");
+                    }
                     currentRoom.RemoveMonster();
                     break;
                 }
