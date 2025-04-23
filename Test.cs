@@ -17,7 +17,7 @@ namespace DungeonExplorer
             Player player = new Player("Player", 30, 0, 1);
             Debug.Assert(player.CurrentHealth == 30, "Player health should be 30.");
 
-            Monster monster = new Monster("Monster", 30, 1000, 1);
+            Monster monster = new Dragon();
             while (player.CurrentHealth > 0)
             {
                 Console.WriteLine("The monster attacks the player.");
@@ -40,7 +40,7 @@ namespace DungeonExplorer
             player.UsePotion(player.PlayerInventory.GetPotion(0));
             Debug.Assert(player.PlayerInventory.PotionCount() == 0, "Player should have 0 potions after using.");
 
-            player.PlayerInventory.AddWeapon(new Weapon("Sword", 10));
+            player.PlayerInventory.AddWeapon(new Weapon("Sword", 10, 1));
             Debug.Assert(player.PlayerInventory.WeaponCount() == 1, "Player should have 1 weapon in inventory.");
 
             player.EquipWeapon(player.PlayerInventory.GetWeapon(0));
@@ -48,7 +48,7 @@ namespace DungeonExplorer
             Debug.Assert(player.Attack == 10, "Player attack should be 10.");
             Debug.Assert(player.PlayerInventory.WeaponCount() == 0, "Player should have 0 weapons in inventory.");
 
-            player.PlayerInventory.AddWeapon(new Weapon("Dagger", 5));
+            player.PlayerInventory.AddWeapon(new Weapon("Dagger", 5, 2));
             player.EquipWeapon(player.PlayerInventory.GetWeapon(0));
             Debug.Assert(player.EquippedWeapon.Name == "Dagger", "Player should have equipped the new weapon.");
             Debug.Assert(player.Attack == 5, "Player attack should be 5.");
@@ -59,8 +59,8 @@ namespace DungeonExplorer
         }
         public void TestRoom()
         {
-            Room room = new Room(new Monster("Monster", 30, 1, 1), new List<Potion>() { new Potion("Potion", 0, 10, 0) }, new Weapon("Sword", 10));
-            Debug.Assert(room.Monster.Name == "Monster", "Monster should be in the room.");
+            Room room = new Room(new Goblin(), new List<Potion>() { new Potion("Potion", 0, 10, 0) }, new Weapon("Sword", 10, 1));
+            Debug.Assert(room.Monster.Name == "Goblin", "A goblin should be in the room.");
             Debug.Assert(room.Potions[0].Name == "Potion", "Potion should be in the room.");
             Debug.Assert(room.Weapon.Name == "Sword", "Sword should be in the room.");
 
@@ -75,9 +75,10 @@ namespace DungeonExplorer
         }
         public void TestItems()
         {
-            Weapon weapon = new Weapon("Sword", 10);
+            Weapon weapon = new Weapon("Sword", 10, 1);
             Debug.Assert(weapon.Name == "Sword", "Weapon name should be 'Sword'.");
             Debug.Assert(weapon.Damage == 10, "Weapon damage should be 10.");
+            Debug.Assert(weapon.Speed == 1, "Weapon speed should be 1.");
 
             string description = weapon.GetDescription();
             Console.WriteLine(description);

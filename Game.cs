@@ -223,6 +223,8 @@ namespace DungeonExplorer
         // Method to make player and monster fight.
         private void FightMonster(Monster monster)
         {
+            bool playerCanAttack = true;
+            bool monsterCanAttack = true;
             while (player.IsAlive)
             {
                 // If no weapon is equipped, the players's weapon is named bare hands.
@@ -235,15 +237,65 @@ namespace DungeonExplorer
                 {
                     weapon += player.EquippedWeapon.Name;
                 }
-                Console.WriteLine($"\nYou attack the {monster.Name} with {weapon}!");
-                player.AttackTarget(currentRoom.Monster);
-                Console.ReadKey(); //ReadKey used to segment fight sequence.
+                if (player.Speed >= 0.66f)
+                {
+                    Console.WriteLine($"\nYou attack the {monster.Name} with {weapon}!");
+                    player.AttackTarget(currentRoom.Monster);
+                    Console.ReadKey(); //ReadKey used to segment fight sequence.
+                    // If the player has a fast speed, they can attack twice per turn.
+                    if (player.Speed >= 1.33f)
+                    {
+                        Console.WriteLine($"\nYou attack the {monster.Name} again!");
+                        player.AttackTarget(currentRoom.Monster);
+                        Console.ReadKey();
+                    }
+                }
+                else if (playerCanAttack)
+                {
+                    Console.WriteLine($"\nYou attack the {monster.Name} with {weapon}!");
+                    player.AttackTarget(currentRoom.Monster);
+                    Console.ReadKey();
+                }
+                // If the player has a slow speed, they can only attack once per 2 turns.
+                if (player.Speed < 0.66f)
+                {
+                    if (!playerCanAttack)
+                    {
+                        Console.WriteLine(| $"You are too slow and the {monster.Name} ddges your attack.");
+                    }
+                    playerCanAttack = !playerCanAttack;
+                }
                 // If the monster is alive, it attacks the player.
                 if (currentRoom.Monster.IsAlive)
                 {
-                    Console.WriteLine($"\nThe {monster.Name} attacks you!");
-                    currentRoom.Monster.AttackTarget(player);
-                    Console.ReadKey();
+                    if (monster.Speed >= 0.66f)
+                    {
+                        Console.WriteLine($"\nThe {monster.Name} attacks you!");
+                        currentRoom.Monster.AttackTarget(player);
+                        Console.ReadKey();
+                        // If the monster has a fast speed, the monster can attack twice per turn.
+                        if (monster.Speed >= 1.33f)
+                        {
+                            Console.WriteLine($"\nThe {monster.Name} attacks you again!");
+                            currentRoom.Monster.AttackTarget(player);
+                            Console.ReadKey();
+                        }
+                    }
+                    else if (monsterCanAttack)
+                    {
+                        Console.WriteLine($"\nThe {monster.Name} attacks you!");
+                        currentRoom.Monster.AttackTarget(player);
+                        Console.ReadKey(); ;
+                    }
+                    // If the monster has a slow speed, it can only attack once per 2 turns.
+                    if (monster.Speed < 0.66f)
+                    {
+                        if (!monsterCanAttack)
+                        {
+                            Console.WriteLine($"\nThe {monster.Name} is too slow and you dodge its attack!");
+                        }
+                        monsterCanAttack = !monsterCanAttack;
+                    }
                 }
                 // If the monster is dead, the monster is removed from the room.
                 else

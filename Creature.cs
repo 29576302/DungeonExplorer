@@ -9,6 +9,7 @@ namespace DungeonExplorer
     /// </summary>
     public abstract class Creature : ICanAttack
     {
+        // Creature's stats are encapsulated in the CreatureStats class. Values here point to the stats.
         public string Name { get; protected set; }
         protected CreatureStats Stats;
         public int MaxHealth => Stats.MaxHealth;
@@ -19,7 +20,7 @@ namespace DungeonExplorer
         public bool IsAlive => Stats.CurrentHealth > 0;
         private static Random dice = new Random();
         /// <summary>
-        /// Constructor for the Creature class.
+        /// Constructor for the Creature class. A CreatureStats object is created to store the stats of the creature.
         /// </summary>
         /// <param name="name">The string that is displayed when the game refers to the creature.</param>
         /// <param name="health">The HP/health points of the creature.</param>
@@ -31,11 +32,14 @@ namespace DungeonExplorer
             Stats = new CreatureStats(health, attack, 1, level);
 
         }
-        protected Creature() // Protected constructor for Monster subclasses to use.
+        /// <summary>
+        /// A protected constructor is used to create a Creature object without any parameters. Used for Monster subclasses.
+        /// </summary>
+        protected Creature()
         {
             Stats = new CreatureStats(0, 0, 1, 1);
         }
-        // Protected methods allow subclasses to modify stats for item use.
+        // Protected methods allow subclasses to modify stats for item use, and for creating Monster subclasses.
         protected void SetAttack(int attack)
         {
             Stats.ModifyAttack(attack - Attack);
