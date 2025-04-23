@@ -261,7 +261,7 @@ namespace DungeonExplorer
                 {
                     if (!playerCanAttack)
                     {
-                        Console.WriteLine(| $"You are too slow and the {monster.Name} ddges your attack.");
+                        Console.WriteLine($"You are too slow and the {monster.Name} ddges your attack.");
                     }
                     playerCanAttack = !playerCanAttack;
                 }
