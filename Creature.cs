@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace DungeonExplorer
 {
@@ -18,7 +19,7 @@ namespace DungeonExplorer
         public abstract float Speed { get; protected set; }
         public int Level => Stats.Level;
         public bool IsAlive => Stats.CurrentHealth > 0;
-        private static Random dice = new Random();
+        protected static Random dice = new Random();
         /// <summary>
         /// Constructor for the Creature class. A CreatureStats object is created to store the stats of the creature.
         /// </summary>
@@ -311,6 +312,15 @@ namespace DungeonExplorer
                 SetCurrentHealth(CurrentHealth + potion.HealthRestore);
             }
             SetAttack(Attack + potion.HealthBonus);
+        }
+        public void TryFlee()
+        {
+            // The monster has a 1/3 chance to flee.
+            if (dice.Next(0, 3) == 0)
+            {
+                Console.WriteLine($"\nThe {Name} flees before you're able to finish it off.");
+                SetCurrentHealth(0);
+            }
         }
     }
 

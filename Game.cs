@@ -240,20 +240,20 @@ namespace DungeonExplorer
                 if (player.Speed >= 0.66f)
                 {
                     Console.WriteLine($"\nYou attack the {monster.Name} with {weapon}!");
-                    player.AttackTarget(currentRoom.Monster);
+                    player.AttackTarget(monster);
                     Console.ReadKey(); //ReadKey used to segment fight sequence.
                     // If the player has a fast speed, they can attack twice per turn.
                     if (player.Speed >= 1.33f)
                     {
                         Console.WriteLine($"\nYou attack the {monster.Name} again!");
-                        player.AttackTarget(currentRoom.Monster);
+                        player.AttackTarget(monster);
                         Console.ReadKey();
                     }
                 }
                 else if (playerCanAttack)
                 {
                     Console.WriteLine($"\nYou attack the {monster.Name} with {weapon}!");
-                    player.AttackTarget(currentRoom.Monster);
+                    player.AttackTarget(monster);
                     Console.ReadKey();
                 }
                 // If the player has a slow speed, they can only attack once per 2 turns.
@@ -266,26 +266,30 @@ namespace DungeonExplorer
                     }
                     playerCanAttack = !playerCanAttack;
                 }
+                if (monster.CurrentHealth < monster.MaxHealth / 3)
+                {
+                    monster.TryFlee();
+                }
                 // If the monster is alive, it attacks the player.
-                if (currentRoom.Monster.IsAlive)
+                if (monster.IsAlive)
                 {
                     if (monster.Speed >= 0.66f)
                     {
                         Console.WriteLine($"\nThe {monster.Name} attacks you!");
-                        currentRoom.Monster.AttackTarget(player);
+                        monster.AttackTarget(player);
                         Console.ReadKey();
                         // If the monster has a fast speed, the monster can attack twice per turn.
                         if (monster.Speed >= 1.33f)
                         {
                             Console.WriteLine($"\nThe {monster.Name} attacks you again!");
-                            currentRoom.Monster.AttackTarget(player);
+                            monster.AttackTarget(player);
                             Console.ReadKey();
                         }
                     }
                     else if (monsterCanAttack)
                     {
                         Console.WriteLine($"\nThe {monster.Name} attacks you!");
-                        currentRoom.Monster.AttackTarget(player);
+                        monster.AttackTarget(player);
                         Console.ReadKey(); ;
                     }
                     // If the monster has a slow speed, it can only attack once per 2 turns.
