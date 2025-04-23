@@ -313,6 +313,9 @@ namespace DungeonExplorer
             }
             SetAttack(Attack + potion.HealthBonus);
         }
+        /// <summary>
+        /// The monster is able to flee from battle. This is done by setting the monster's CurrentHealth to 0 to end the battle.
+        /// </summary>
         public void TryFlee()
         {
             // The monster has a 1/3 chance to flee.
