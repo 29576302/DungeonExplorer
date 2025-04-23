@@ -262,6 +262,7 @@ namespace DungeonExplorer
                     if (!playerCanAttack)
                     {
                         Console.WriteLine($"\nYou are too slow and the {monster.Name} dodges your attack.");
+                        Console.ReadKey();
                     }
                     playerCanAttack = !playerCanAttack;
                 }
@@ -293,6 +294,7 @@ namespace DungeonExplorer
                         if (!monsterCanAttack)
                         {
                             Console.WriteLine($"\nThe {monster.Name} is too slow and you dodge its attack!");
+                            Console.ReadKey();
                         }
                         monsterCanAttack = !monsterCanAttack;
                     }
