@@ -12,6 +12,7 @@ namespace DungeonExplorer
     {
         private Player player;
         private Room currentRoom;
+        private Map exploredRooms;
         private bool playing;
         private static Random random = new Random();
         /// <summary>
@@ -23,6 +24,8 @@ namespace DungeonExplorer
         {
             player = startingPlayer;
             currentRoom = startingRoom;
+            exploredRooms = new Map();
+            exploredRooms.AddRoom(currentRoom);
             playing = true;
 
         }
@@ -54,17 +57,33 @@ namespace DungeonExplorer
             {
                 if (currentRoom.Potions != null)
                 {
-                    actions += "\nP) Take potion(s).";
+                    actions += "\nP) Take potion(s)";
                 }
                 if (currentRoom.Weapon != null)
                 {
                     actions += $"\nW) Take {currentRoom.Weapon.Name}";
                 }
-                actions += "\nR) Explore a new room";
+                if (exploredRooms.LastRoom(currentRoom) != null)
+                {
+                    actions += "\nL) Return to last room";
+                }
+                if (exploredRooms.NewestRoom() == currentRoom)
+                {
+                    actions += "\nR) Explore a new room";
+                }
+                else
+                {
+                    actions += "\nR) Advance to next room";
+                }
+
             }
             else
             {
                 actions += $"\nA) Attack {currentRoom.Monster.Name}";
+                if (player.Speed >= 1.33f && exploredRooms.LastRoom(currentRoom) != null)
+                {
+                    actions += "\nF) Attempt to flee.";
+                }
             }
             Console.WriteLine(actions);
             // Asks for and validates user input. While true loop until a valid input is given.
@@ -128,14 +147,47 @@ namespace DungeonExplorer
                 // Opens the player menu, where inventory and stats can be viewed.
                 else if (userChoice == "M")
                 {
-                    player.Menu();
+                    player.Menu(exploredRooms.GetMap(currentRoom));
                     break;
                 }
                 // Generates a new room and assigns it to CurrentRoom (if there is no monster).
                 else if (userChoice == "R" && currentRoom.Monster == null)
                 {
-                    currentRoom = NewRoom();
+                    if (exploredRooms.NewestRoom() == currentRoom)
+                    {
+                        currentRoom = NewRoom();
+                        exploredRooms.AddRoom(currentRoom);
+                        break;
+                    }
+                    else
+                    {
+                        currentRoom = exploredRooms.NextRoom(currentRoom);
+                        break;
+                    }
+                }
+                else if (userChoice == "L" && exploredRooms.LastRoom(currentRoom) != null)
+                {
+                    currentRoom = exploredRooms.LastRoom(currentRoom);
+                    Console.WriteLine("You return to the last room.");
                     break;
+                }
+                else if (userChoice == "F" && currentRoom.Monster != null && player.Speed >= 1.33f && exploredRooms.LastRoom(currentRoom) != null)
+                {
+                    Console.WriteLine($"You attempt to flee from the {currentRoom.Monster.Name}.");
+                    if (random.Next(0,3) == 0)
+                    {
+                        Console.WriteLine($"You successfully flee from the {currentRoom.Monster.Name}.");
+                        Console.ReadKey();
+                        currentRoom = exploredRooms.LastRoom(currentRoom);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"You fail to flee from the {currentRoom.Monster.Name}.");
+                        Console.ReadKey();
+                        FightMonster(currentRoom.Monster);
+                    }
+                    break;
+                    
                 }
                 else
                 {

@@ -68,7 +68,7 @@ namespace DungeonExplorer
         /// </summary>
         public Player(string name, int health, int attack, int level) : base(name, health, attack, level)
         {
-            Stats = new CreatureStats(health, attack, 1, level, true);
+            Stats = new CreatureStats(health, attack, 0, level, true);
         }
         /// <summary>
         /// UsePotion method allows the player to use a potion from their inventory.
@@ -96,12 +96,13 @@ namespace DungeonExplorer
         /// <summary>
         /// Menu method allows the player to check stats and use inventory.
         /// </summary>
-        public void Menu()
+        public void Menu(string map)
         {
             while (true)
             {
                 Console.WriteLine("\n========Menu========");
                 Console.WriteLine("Name: " + Name);
+                Console.WriteLine($"Map:\n{map}");
                 // Displays stats.
                 Console.WriteLine("\nStats:");
                 Console.WriteLine($"Health: {CurrentHealth}");
