@@ -9,8 +9,6 @@ namespace DungeonExplorer
     // REFLECTIVE ANALYISSIS:
     // LINQ Could be used in the Game class to filter rooms based on their properties.
     // LINQ Could be used in the Player class to automatically equip the best weapon from the inventory.
-    // Examples of interfaces could be IDescribable for Item. For Creature, an interface could be ICanAttack to define the attack method.
-    // A statistics class could be created to handle Creature stats.
     internal class Program
     {
         /// <summary>
@@ -27,7 +25,7 @@ namespace DungeonExplorer
                 Console.Write("What will you call yourself?\n>");
                 playerName = Console.ReadLine().Trim();
             }
-            Player player = new Player(playerName, 30, 0, 1);
+            Player player = new Player(playerName, 30, 1, 1);
             // Initializing starting room
             Room startingRoom = new Room(null, new List<Potion>(){ new Potion("Health(10) Potion", 0, 10, 0) }, new Weapon("Sword", 10, 1));
             // Initializing and starting game

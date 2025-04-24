@@ -12,6 +12,11 @@ namespace DungeonExplorer
         public int Attack { get; private set; }
         public float Speed { get; private set; }
         public int Level { get; private set; }
+        public int XP { get; private set; } = 0;
+        private readonly bool isPlayer;
+        private readonly int baseHealth;
+        private readonly int baseAttack;
+
 
         /// <summary>
         /// Basic constructor for the CreatureStats class.
@@ -20,13 +25,16 @@ namespace DungeonExplorer
         /// <param name="attack">The value used to determine the damage of a Creature's attacks.</param>
         /// <param name="speed">The value used to indicate the speed of a Creature. Used during combat.</param>
         /// <param name="level">Used to indicate a Monster's difficulty level. Used to show progression for Player.</param>
-        public CreatureStats(int health, int attack, float speed, int level)
+        public CreatureStats(int health, int attack, float speed, int level, bool player)
         {
             MaxHealth = health;
             CurrentHealth = health;
+            baseHealth = health;
             Attack = attack;
+            baseAttack = attack;
             Speed = speed;
             Level = level;
+            isPlayer = player;
         }
 
         /// <summary>
@@ -95,6 +103,35 @@ namespace DungeonExplorer
             {
                 Level = 0;
             }
+        }
+        /// <summary>
+        /// Modifies the XP of a Creature. XP cannot be negative. When XP exceeds Level * 10,
+        /// and the Creature is a Player, they level up.
+        /// </summary>
+        /// <param name="amount">Float amount added to XP. Can be positive or negative.</param>
+        public void ModifyXP(int amount)
+        {
+            XP += amount;
+            if (XP < 0)
+            {
+                XP = 0;
+            }
+            if (XP > Level * 10 && isPlayer)
+            {
+                while (XP > Level * 10)
+                {
+                    LevelUp();
+                    XP -= Level * 10;
+                }
+            }
+        }
+        private void LevelUp()
+        {
+            Level++;
+            MaxHealth += (int)(baseHealth * Level/10.0f);
+            Attack += (int)(baseAttack * Level/10.0f);
+            Console.WriteLine($"\nYou've leveled up! Your new level is {Level}");
+            Console.ReadKey();
         }
     }
 }

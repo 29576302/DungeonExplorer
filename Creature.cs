@@ -16,7 +16,7 @@ namespace DungeonExplorer
         public int MaxHealth => Stats.MaxHealth;
         public int CurrentHealth => Stats.CurrentHealth;
         public int Attack => Stats.Attack;
-        public abstract float Speed { get; protected set; }
+        public float Speed => Stats.Speed;
         public int Level => Stats.Level;
         public bool IsAlive => Stats.CurrentHealth > 0;
         protected static Random dice = new Random();
@@ -30,7 +30,7 @@ namespace DungeonExplorer
         public Creature(string name, int health, int attack, int level) 
         {
             Name = name;
-            Stats = new CreatureStats(health, attack, 1, level);
+            Stats = new CreatureStats(health, attack, 1, level, false);
 
         }
         /// <summary>
@@ -38,20 +38,7 @@ namespace DungeonExplorer
         /// </summary>
         protected Creature()
         {
-            Stats = new CreatureStats(0, 0, 1, 1);
-        }
-        // Protected methods allow subclasses to modify stats for item use, and for creating Monster subclasses.
-        protected void SetAttack(int attack)
-        {
-            Stats.ModifyAttack(attack - Attack);
-        }
-        protected void SetMaxHealth(int health)
-        {
-            Stats.ModifyMaxHealth(health - MaxHealth);
-        }
-        protected void SetCurrentHealth(int health)
-        {
-            Stats.ModifyCurrentHealth(health - CurrentHealth);
+            Stats = new CreatureStats(0, 0, 0, 0, false);
         }
         /// <summary>
         /// AttackTarget method uses a d20 roll to determine damage dealt.
@@ -76,27 +63,12 @@ namespace DungeonExplorer
     {
         public Weapon EquippedWeapon { get; private set; }
         public Inventory PlayerInventory = new Inventory();
-        private float baseSpeed = 1;
-        /// <summary>
-        /// Speed property is overridden to allow for the player to have a base speed of 1,
-        /// Speed is calculated by adding the base speed to the equipped weapon's speed.
-        /// </summary>
-        public override float Speed
-        {
-            get {return baseSpeed * (EquippedWeapon?.Speed?? 1); }
-            protected set { baseSpeed = value / (EquippedWeapon?.Speed?? 1); }
-        }
         /// <summary>
         /// Constructor for the Player class.
         /// </summary>
-        /// <param name="name">Inherited from Creature. Same use as described above.</param>
-        /// <param name="health">Inherited from Creature. Same use as described above.</param>
-        /// <param name="attack">Inherited from Creature. Same use as described above.</param>
-        /// <param name="speed">The speed at which a creature attacks. Speed can be at any point between 0<speed<=2,
-        /// where speed=1 is the starting speed for a player.</param>
-        /// <param name="level">Inherited from Creature. Same use as described above.</param>
         public Player(string name, int health, int attack, int level) : base(name, health, attack, level)
         {
+            Stats = new CreatureStats(health, attack, 1, level, true);
         }
         /// <summary>
         /// UsePotion method allows the player to use a potion from their inventory.
@@ -107,19 +79,19 @@ namespace DungeonExplorer
             // Potion is removed from the player's inventory.
             PlayerInventory.RemovePotion(potion);
             // Potion effects are applied to the player's stats.
-            SetMaxHealth(MaxHealth + potion.HealthBonus);
+            Stats.ModifyMaxHealth(potion.HealthBonus);
             // If the player's (CurrentHealth + potion.HealthRestore) > MaxHealth,
             // the player's health is set to MaxHealth.
             // This is done to avoid the player's health exceeding their max health.
             if (CurrentHealth + potion.HealthRestore > MaxHealth)
             {
-                SetCurrentHealth(MaxHealth);
+                Stats.ModifyCurrentHealth(MaxHealth - CurrentHealth);
             }
             else
             {
-                SetCurrentHealth(CurrentHealth + potion.HealthRestore);
+                Stats.ModifyCurrentHealth(potion.HealthRestore);
             }
-            SetAttack(Attack + potion.Damage);
+            Stats.ModifyAttack(potion.Damage);
         }
         /// <summary>
         /// Menu method allows the player to check stats and use inventory.
@@ -261,14 +233,17 @@ namespace DungeonExplorer
             {
                 EquippedWeapon = weapon;
                 PlayerInventory.RemoveWeapon(weapon);
-                SetAttack(Attack + weapon.Damage);
+                Stats.ModifyAttack(weapon.Damage);
+                Stats.ModifySpeed(weapon.Speed);
             }
             else
             {
                 PlayerInventory.AddWeapon(EquippedWeapon);
-                SetAttack(Attack - EquippedWeapon.Damage);
+                Stats.ModifyAttack(-EquippedWeapon.Damage);
+                Stats.ModifySpeed(-EquippedWeapon.Speed);
                 EquippedWeapon = weapon;
-                SetAttack(Attack + weapon.Damage);
+                Stats.ModifyAttack(weapon.Damage);
+                Stats.ModifySpeed(weapon.Speed);
                 PlayerInventory.RemoveWeapon(weapon);
             }
         }
@@ -281,9 +256,18 @@ namespace DungeonExplorer
             if (EquippedWeapon != null)
             {
                 PlayerInventory.AddWeapon(EquippedWeapon);
-                SetAttack(Attack - EquippedWeapon.Damage);
+                Stats.ModifyAttack(-EquippedWeapon.Damage);
+                Stats.ModifySpeed(-EquippedWeapon.Speed);
                 EquippedWeapon = null;
             }
+        }
+        /// <summary>
+        /// Method used to gain XP and level up the player.
+        /// </summary>
+        /// <param name="xp">XP added to the player's level.</param>
+        public void GainXP(int xp)
+        {
+            Stats.ModifyXP(xp);
         }
     }
     /// <summary>
@@ -292,7 +276,11 @@ namespace DungeonExplorer
     public abstract class Monster : Creature
     {
         public bool Fled {get; protected set; }
-        protected Monster() : base() // Protected constructor for Monster subclasses to use.
+        protected abstract bool CanFlee { get; }
+        /// <summary>
+        /// Protected constructor for Monster subclasses to use.
+        /// </summary>
+        protected Monster() : base()
         {
             Fled = false;
         } 
@@ -303,97 +291,85 @@ namespace DungeonExplorer
         /// <param name="potion">The potion used by the monster.</param>
         public override void UsePotion(Potion potion)
         {
-            SetMaxHealth(MaxHealth + potion.HealthBonus);
+            Stats.ModifyMaxHealth(potion.HealthBonus);
             if (CurrentHealth + potion.HealthRestore > MaxHealth)
             {
-                SetCurrentHealth(MaxHealth);
+                Stats.ModifyCurrentHealth(MaxHealth - CurrentHealth);
             }
             else
             {
-                SetCurrentHealth(CurrentHealth + potion.HealthRestore);
+                Stats.ModifyCurrentHealth(potion.HealthRestore);
             }
-            SetAttack(Attack + potion.HealthBonus);
+            Stats.ModifyAttack(potion.Damage);
         }
         /// <summary>
         /// The monster is able to flee from battle. This is done by setting the monster's CurrentHealth to 0 to end the battle.
         /// </summary>
         public void TryFlee()
         {
+            if (!CanFlee)
+            {
+                return;
+            }
             // The monster has a 1/3 chance to flee.
             if (dice.Next(0, 3) == 0)
             {
                 Console.WriteLine($"\nThe {Name} flees before you're able to finish it off.");
                 Fled = true;
-                SetCurrentHealth(0);
+                Stats.ModifyCurrentHealth(-CurrentHealth);
             }
         }
     }
 
     public class Goblin : Monster
     {
-        public override float Speed
-        {
-            get => Stats.Speed;
-            protected set => Stats.ModifySpeed(value - Stats.Speed);
-        }
+        protected override bool CanFlee => true;
         public Goblin()
         {
             Name = "Goblin";
             Stats.ModifyMaxHealth(10);
             Stats.ModifyCurrentHealth(10);
             Stats.ModifyAttack(5);
-            Speed = 1.5f;
-            Stats.ModifyLevel(1);
+            Stats.ModifySpeed(1.5f);
+            Stats.ModifyLevel(1000);
         }
     }
     public class Orc : Monster
     {
-        public override float Speed
-        {
-            get => Stats.Speed;
-            protected set => Stats.ModifySpeed(value - Stats.Speed);
-        }
+        protected override bool CanFlee => true;
         public Orc()
         {
             Name = "Orc";
             Stats.ModifyMaxHealth(20);
             Stats.ModifyCurrentHealth(20);
             Stats.ModifyAttack(10);
-            Speed = 1.0f;
+            Stats.ModifySpeed(1.0f);
             Stats.ModifyLevel(3);
         }
     }
     public class Troll : Monster
     {
-        public override float Speed
-        {
-            get => Stats.Speed;
-            protected set => Stats.ModifySpeed(value - Stats.Speed);
-        }
+        protected override bool CanFlee => false;
         public Troll()
         {
             Name = "Troll";
             Stats.ModifyMaxHealth(30);
             Stats.ModifyCurrentHealth(MaxHealth);
             Stats.ModifyAttack(15);
-            Speed = 0.5f;
+            Stats.ModifySpeed(0.5f);
             Stats.ModifyLevel(5);
         }
     }
     public class Dragon : Monster
     {
-        public override float Speed
-        {
-            get => Stats.Speed;
-            protected set => Stats.ModifySpeed(value - Stats.Speed);
-        }
+        protected override bool CanFlee => false;
         public Dragon()
         {
             Name = "Dragon";
             Stats.ModifyMaxHealth(50);
             Stats.ModifyCurrentHealth(MaxHealth);
             Stats.ModifyAttack(15);
-            Speed = 1;
+            Stats.ModifySpeed(1);
             Stats.ModifyLevel(10);
         }
     }

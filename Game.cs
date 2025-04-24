@@ -310,6 +310,8 @@ namespace DungeonExplorer
                     if (!monster.Fled)
                     {
                         Console.WriteLine($"\nYou defeat the {monster.Name}!");
+                        Console.WriteLine($"You gain {monster.Level} XP!");
+                        player.GainXP(monster.Level);
                     }
                     currentRoom.RemoveMonster();
                     break;
