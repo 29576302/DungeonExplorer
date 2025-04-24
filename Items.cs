@@ -11,9 +11,10 @@ namespace DungeonExplorer
     /// </summary>
     public abstract class Item : IDescribable
     {
-        public string Name { get; private set; }
+        private string baseName;
+        public string Name => baseName + $" ({Description})";
         public int Damage { get; private set; }
-        protected string description;
+        public string Description { get; protected set; }
         /// <summary>
         /// Constructor for the abstract class Item. This class is not meant to be instantiated.
         /// </summary>
@@ -21,19 +22,13 @@ namespace DungeonExplorer
         /// <param name="damage">The amount of damage the item adds to the player's attack.</param>
         public Item(string name, int damage)
         {
-            Name = name;
+            baseName = name;
             Damage = damage;
-            description = "";
         }
         /// <summary>
         /// Abstract method, as item values are unique to each subclass.
         /// </summary>
         public abstract void CreateDescription();
-        public string GetDescription()
-        {
-            CreateDescription();
-            return description;
-        }
     }
     /// <summary>
     /// This class is used to create potions that grant various bonuses to Creatures.
@@ -55,26 +50,33 @@ namespace DungeonExplorer
         {
             HealthRestore = healthRestore;
             HealthBonus = healthBonus;
+            CreateDescription();
         }
         /// <summary>
         /// Potion specific override of CreateDescription.
         /// </summary>
         public override void CreateDescription()
         {
-            Console.WriteLine($"{HealthRestore}, {HealthBonus}, {Damage}");
-            description = $"Name: {Name}";
             // Only adds attributes if their value > 0.
             if (HealthRestore > 0)
             {
-                description += $"\nHealth Restore: {HealthRestore}";
+                Description += $"Health Restore: {HealthRestore}";
             }
             if (HealthBonus > 0)
             {
-                description += $"\nHealth Bonus: {HealthBonus}";
+                if (Description != null)
+                {
+                    Description += ", ";
+                }
+                Description += $"Health Bonus: {HealthBonus}";
             }
             if (Damage > 0)
             {
-                description += $"\nAttack Bonus: {Damage}";
+                if (Description != null)
+                {
+                    Description += ", ";
+                }
+                Description += $"Attack Bonus: {Damage}";
             }
         }
     }
@@ -84,6 +86,7 @@ namespace DungeonExplorer
         public Weapon(string name, int damage, float speed) : base(name, damage)
         {
             Speed = speed;
+            CreateDescription();
         }
         /// <summary>
         /// Weapon specific override of CreateDescription.
@@ -92,7 +95,7 @@ namespace DungeonExplorer
         {
             // If the speed is >1.33, the weapon is fast, if the speed is <0.66 the weapon is slow, otherwise the weapon has a normal speed.
             string speedDescription = Speed >+ 1.33 ? "Fast" : Speed <+ 0.66 ? "Slow" : "Normal";
-            description = $"Name: {Name}\nDamage: {Damage}\nSpeed: {speedDescription}";
+            Description = $"Damage: {Damage}, Speed: {speedDescription}";
         }
     }
 }

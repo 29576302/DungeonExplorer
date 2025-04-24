@@ -80,7 +80,7 @@ namespace DungeonExplorer
             Debug.Assert(weapon.Damage == 10, "Weapon damage should be 10.");
             Debug.Assert(weapon.Speed == 1, "Weapon speed should be 1.");
 
-            string description = weapon.GetDescription();
+            string description = weapon.Description;
             Console.WriteLine(description);
             Debug.Assert(description == "Name: Sword\nDamage: 10", "Weapon description should be correct.");
 
@@ -88,7 +88,7 @@ namespace DungeonExplorer
             Debug.Assert(potion.Name == "Potion", "Potion name should be 'Potion'.");
             Debug.Assert(potion.HealthRestore == 10, "Potion should restore 10 health.");
 
-            description = potion.GetDescription();
+            description = potion.Description;
             Console.WriteLine(description);
             Debug.Assert(description == "Name: Potion\nHealth Restore: 10", "Potion description should be correct.");
         }

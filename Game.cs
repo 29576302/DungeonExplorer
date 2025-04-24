@@ -177,39 +177,26 @@ namespace DungeonExplorer
                 // Generates potion stats and name. Stats may be 0.
 
                 Potion potion = null;
-                string potionName = "";
                 int potionHealthRestore = 0;
                 int potionHealthBonus = 0;
                 int potionDamageBonus = 0;
                 if (random.Next(0, 2) == 0)
                 {
                     potionHealthRestore = random.Next(5, 16);
-                    potionName = $"Health({potionHealthRestore})";
                 }
                 if (random.Next(0, 6) == 0)
                 {
                     potionHealthBonus = random.Next(1, 6);
-                    if (potionHealthRestore != 0)
-                    {
-                        potionName += ", ";
-                    }
-                    potionName += $"Vitality({potionHealthBonus})";
                 }
                 if (random.Next(0, 11) == 0)
                 {
                     potionDamageBonus = random.Next(1, 6);
-                    if (potionHealthRestore != 0 || potionHealthBonus != 0)
-                    {
-                        potionName += ", ";
-                    }
-                    potionName += $"Strength({potionDamageBonus})";
                 }
-                potionName += " Potion";
                 // If all stats are 0, the potion is not added to the list.
                 if (!(potionHealthRestore == 0 && potionHealthBonus == 0 && potionDamageBonus == 0))
                 {
                     
-                    potion = new Potion(potionName, potionDamageBonus, potionHealthRestore, potionHealthBonus);
+                    potion = new Potion("Potion", potionDamageBonus, potionHealthRestore, potionHealthBonus);
                     potions.Add(potion);
                 }
             }
