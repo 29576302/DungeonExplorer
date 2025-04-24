@@ -332,7 +332,7 @@ namespace DungeonExplorer
             Stats.ModifyCurrentHealth(10);
             Stats.ModifyAttack(5);
             Stats.ModifySpeed(1.5f);
-            Stats.ModifyLevel(1000);
+            Stats.ModifyLevel(1);
         }
     }
     public class Orc : Monster

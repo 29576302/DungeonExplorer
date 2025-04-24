@@ -130,6 +130,7 @@ namespace DungeonExplorer
             Level++;
             MaxHealth += (int)(baseHealth * Level/10.0f);
             Attack += (int)(baseAttack * Level/10.0f);
+            CurrentHealth = MaxHealth;
             Console.WriteLine($"\nYou've leveled up! Your new level is {Level}");
             Console.ReadKey();
         }
