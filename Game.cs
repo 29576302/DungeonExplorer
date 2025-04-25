@@ -2,6 +2,7 @@
 using System.Media;
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 
 namespace DungeonExplorer
 {
@@ -41,7 +42,7 @@ namespace DungeonExplorer
             }
             if (!playing)
             {
-                Console.WriteLine("Game Over!");
+                Console.WriteLine("\nGame Over!");
             }
         }
         /// <summary>
@@ -49,40 +50,66 @@ namespace DungeonExplorer
         /// </summary>
         private void TakeAction()
         {
+            // Checks if the current room has a trap. If it does, the trap is activated.
+            if (currentRoom.Monster is Trap)
+            {
+                Console.WriteLine("\nYou have triggered a trap!");
+                currentRoom.Monster.AttackTarget(player);
+                currentRoom.RemoveMonster();
+                if (!player.IsAlive)
+                {
+                    Console.WriteLine("You have died.");
+                    playing = false; // Main game loop ends if player dies.
+                    return;
+                }
+                else
+                {
+                    Console.WriteLine($"You have {player.CurrentHealth} health remaining.");
+                    Console.Write("Press Enter to continue.");
+                    Console.ReadKey();
+                    Console.WriteLine();
+                }
+            }
             // Displays the room description.
             Console.WriteLine($"\n{currentRoom.GetDescription()}");
             // Calculates and displays the player's available actions.
             string actions = "\nActions: \nM) Menu";
             if (currentRoom.Monster == null)
             {
-                if (currentRoom.Potions != null)
+                if (currentRoom.IsBossRoom && currentRoom.Monster == null)
                 {
-                    actions += "\nP) Take potion(s)";
-                }
-                if (currentRoom.Weapon != null)
-                {
-                    actions += $"\nW) Take {currentRoom.Weapon.Name}";
-                }
-                if (exploredRooms.LastRoom(currentRoom) != null)
-                {
-                    actions += "\nL) Return to last room";
-                }
-                if (exploredRooms.NewestRoom() == currentRoom)
-                {
-                    actions += "\nR) Explore a new room";
+                    actions += "\nE) Exit the dungeon\nL) Return to last room";
                 }
                 else
                 {
-                    actions += "\nR) Advance to next room";
+                    if (currentRoom.Potions != null)
+                    {
+                        actions += "\nP) Take potion(s)";
+                    }
+                    if (currentRoom.Weapon != null)
+                    {
+                        actions += $"\nW) Take {currentRoom.Weapon.Name}";
+                    }
+                    if (exploredRooms.LastRoom(currentRoom) != null)
+                    {
+                        actions += "\nL) Return to last room";
+                    }
+                    if (exploredRooms.NewestRoom() == currentRoom)
+                    {
+                        actions += "\nR) Explore a new room";
+                    }
+                    else
+                    {
+                        actions += "\nR) Advance to next room";
+                    }
                 }
-
             }
             else
             {
                 actions += $"\nA) Attack {currentRoom.Monster.Name}";
-                if (player.Speed >= 1.33f && exploredRooms.LastRoom(currentRoom) != null)
+                if (player.Speed >= 1.33f && exploredRooms.LastRoom(currentRoom) != null && !currentRoom.IsBossRoom)
                 {
-                    actions += "\nF) Attempt to flee.";
+                    actions += "\nF) Attempt to flee";
                 }
             }
             Console.WriteLine(actions);
@@ -93,7 +120,7 @@ namespace DungeonExplorer
                 // Converts userChoice input to upper to avoid case sensitivity.
                 string userChoice = Console.ReadLine().ToUpper().Trim();
                 // The user is only allowed to take a potion if there is one or more in the room (and if the monster is dead).
-                if (userChoice == "P" && currentRoom.Potions != null && currentRoom.Monster == null)
+                if (userChoice == "P" && currentRoom.Potions != null && currentRoom.Monster == null && !currentRoom.IsBossRoom)
                 {
                     if (!player.PlayerInventory.PotionIsFull)
                     {
@@ -138,7 +165,7 @@ namespace DungeonExplorer
                 }
                 // Similarly to the potion statement,
                 // the user is only allowed to take a weapon if one is present in the room (and if the monster is dead).
-                else if (userChoice == "W" && currentRoom.Weapon != null && currentRoom.Monster == null)
+                else if (userChoice == "W" && currentRoom.Weapon != null && currentRoom.Monster == null && !currentRoom.IsBossRoom)
                 {
                     if (!player.PlayerInventory.WeaponIsFull)
                     {
@@ -161,11 +188,12 @@ namespace DungeonExplorer
                 // Opens the player menu, where inventory and stats can be viewed.
                 else if (userChoice == "M")
                 {
+                    // The map visualiser is passed to the menu, so the player can see the rooms they have explored.
                     player.Menu(exploredRooms.GetMap(currentRoom));
                     break;
                 }
                 // Generates a new room and assigns it to CurrentRoom (if there is no monster).
-                else if (userChoice == "R" && currentRoom.Monster == null)
+                else if (userChoice == "R" && currentRoom.Monster == null && !currentRoom.IsBossRoom)
                 {
                     if (exploredRooms.NewestRoom() == currentRoom)
                     {
@@ -179,29 +207,35 @@ namespace DungeonExplorer
                         break;
                     }
                 }
+                // The user is only allowed to return to the last room if there is one.
                 else if (userChoice == "L" && exploredRooms.LastRoom(currentRoom) != null)
                 {
                     currentRoom = exploredRooms.LastRoom(currentRoom);
                     Console.WriteLine("You return to the last room.");
                     break;
                 }
-                else if (userChoice == "F" && currentRoom.Monster != null && player.Speed >= 1.33f && exploredRooms.LastRoom(currentRoom) != null)
+                // The user may attempt to flee the monster if their speed is high enough.
+                else if (userChoice == "F" && currentRoom.Monster != null && player.Speed >= 1.33f && exploredRooms.LastRoom(currentRoom) != null && !currentRoom.IsBossRoom)
                 {
                     Console.WriteLine($"You attempt to flee from the {currentRoom.Monster.Name}.");
                     if (random.Next(0,3) == 0)
                     {
                         Console.WriteLine($"You successfully flee from the {currentRoom.Monster.Name}.");
-                        Console.ReadKey();
                         currentRoom = exploredRooms.LastRoom(currentRoom);
                     }
                     else
                     {
                         Console.WriteLine($"You fail to flee from the {currentRoom.Monster.Name}.");
-                        Console.ReadKey();
                         FightMonster(currentRoom.Monster);
                     }
                     break;
-                    
+                }
+                // The user may exit the dungeon if they are in the boss room and have defeated the boss.
+                else if (userChoice == "E" && currentRoom.IsBossRoom && currentRoom.Monster == null)
+                {
+                    Console.WriteLine("You exit the dungeon.");
+                    playing = false;
+                    break;
                 }
                 else
                 {
@@ -219,12 +253,19 @@ namespace DungeonExplorer
         /// <returns></returns>
         private Room NewRoom()
         {
+            // If 7 rooms have been explored, the player has the chance to find the boss room.
+            if (exploredRooms.RoomCount >= 7 && random.Next(0,4) == 0)
+            {
+                Console.WriteLine("You encounter a fearsome monster guarding a mountain of treasure!");
+                return new Room(new Dragon(), null, null, true);
+            }
             // A list of monsters and weapons to be randomly selected from.
             Monster[] monsters = new Monster[]
             {
                 new Goblin(),
                 new Orc(),
                 new Troll(),
+                new Trap(),
                 null
             };
             Weapon[] weapons = new Weapon[]
@@ -271,7 +312,7 @@ namespace DungeonExplorer
             {
                 potions = null;
             }
-            return new Room(monster, potions, weapon);
+            return new Room(monster, potions, weapon, false);
         }
         // Method to make player and monster fight.
         private void FightMonster(Monster monster)
@@ -365,6 +406,10 @@ namespace DungeonExplorer
                         Console.WriteLine($"\nYou defeat the {monster.Name}!");
                         Console.WriteLine($"You gain {monster.Level} XP!");
                         player.GainXP(monster.Level);
+                    }
+                    if (currentRoom.IsBossRoom)
+                    {
+                        Console.WriteLine("\nYou find an exit behind the treasure!");
                     }
                     currentRoom.RemoveMonster();
                     break;

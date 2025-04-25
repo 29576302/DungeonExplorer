@@ -59,7 +59,7 @@ namespace DungeonExplorer
         }
         public void TestRoom()
         {
-            Room room = new Room(new Goblin(), new List<Potion>() { new Potion("Potion", 0, 10, 0) }, new Weapon("Sword", 10, 1));
+            Room room = new Room(new Goblin(), new List<Potion>() { new Potion("Potion", 0, 10, 0) }, new Weapon("Sword", 10, 1), false);
             Debug.Assert(room.Monster.Name == "Goblin", "A goblin should be in the room.");
             Debug.Assert(room.Potions[0].Name == "Potion", "Potion should be in the room.");
             Debug.Assert(room.Weapon.Name == "Sword", "Sword should be in the room.");

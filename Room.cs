@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace DungeonExplorer
 {
@@ -10,6 +11,7 @@ namespace DungeonExplorer
         public Monster Monster { get; private set; }
         public List<Potion> Potions { get; private set; }
         public Weapon Weapon { get; private set; }
+        public bool IsBossRoom { get; private set; }
         private string description; // Accessed through methods detailed below.
         /// <summary>
         /// This is the constructor for the Room class.
@@ -18,12 +20,14 @@ namespace DungeonExplorer
         /// <param name="potions">The potions that will be in the room.
         /// A list of potions is used, as more than one can appear in a room.</param>
         /// <param name="weapon">The weapon that will be in the room.</param>
-        public Room(Monster monster, List<Potion> potions, Weapon weapon)
+        public Room(Monster monster, List<Potion> potions, Weapon weapon, bool isBossRoom)
         {
             Monster = monster;
             Potions = potions;
             Weapon = weapon;
             description = "";
+            CreateDescription();
+            IsBossRoom = isBossRoom;
         }
         /// <summary>
         /// Generates a description of the room.
@@ -47,14 +51,7 @@ namespace DungeonExplorer
             }
             else
             {
-                for (int i = 0; i < Potions.Count; i++)
-                {
-                    description += Potions[i].Name;
-                    if (i < Potions.Count - 1)
-                    {
-                        description += ", ";
-                    }
-                }
+                description += string.Join(", ", Potions.Select(p => p.Name)); // LINQ to join potion names.
             }
             description += "\nWeapon: ";
             if (Weapon == null)

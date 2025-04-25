@@ -116,12 +116,12 @@ namespace DungeonExplorer
             {
                 XP = 0;
             }
-            if (XP > Level * 10 && isPlayer)
+            if (XP >= Level && isPlayer)
             {
-                while (XP > Level * 10)
+                while (XP > Level)
                 {
                     LevelUp();
-                    XP -= Level * 10;
+                    XP -= Level;
                 }
             }
         }
@@ -134,7 +134,7 @@ namespace DungeonExplorer
             MaxHealth += (int)(baseHealth * Level/10.0f);
             Attack += (int)(baseAttack * Level/10.0f);
             CurrentHealth = MaxHealth;
-            Console.WriteLine($"\nYou've leveled up! Your new level is {Level}");
+            Console.WriteLine($"\nYou've leveled up! You are now level {Level}.");
             Console.ReadKey();
         }
     }

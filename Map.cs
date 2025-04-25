@@ -12,6 +12,7 @@ namespace DungeonExplorer
     class Map
     {
         private readonly List<Room> rooms;
+        public int RoomCount => rooms.Count;
         public Map()
         {
             rooms = new List<Room>();

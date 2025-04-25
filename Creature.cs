@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace DungeonExplorer
 {
@@ -44,11 +45,19 @@ namespace DungeonExplorer
         /// AttackTarget method uses a d20 roll to determine damage dealt.
         /// </summary>
         /// <param name="target">The creature that this attack targets.</param>
-        public void AttackTarget(Creature target)
+        public virtual void AttackTarget(Creature target)
         {
             int damage = (Attack * dice.Next(1, 21)) / 20;
             Console.WriteLine($"The attack deals {damage} damage.");
             target.Stats.ModifyCurrentHealth(-damage);
+        }
+        /// <summary>
+        /// Used by Traps to deal damage to the target.
+        /// </summary>
+        /// <param name="damage">The amount of damage dealt.</param>
+        public void TakeDamage(int damage)
+        {
+            Stats.ModifyCurrentHealth(-damage);
         }
         /// <summary>
         /// Abstract method for potion use, as monsters do not have an inventory.
@@ -107,8 +116,9 @@ namespace DungeonExplorer
                 Console.WriteLine($"Map:\n{map}");
                 // Displays stats.
                 Console.WriteLine("\nStats:");
-                Console.WriteLine($"Health: {CurrentHealth}");
+                Console.WriteLine($"Health: {CurrentHealth}/{MaxHealth}");
                 Console.WriteLine($"Attack: {Attack}");
+                Console.WriteLine($"XP: {Stats.XP}/{Level}");
                 Console.WriteLine($"Level: {Level}");
                 if (EquippedWeapon == null)
                 {
@@ -186,7 +196,16 @@ namespace DungeonExplorer
                 // The player is only able to unequip a weapon if they have one equipped.
                 else if (userChoice == "U" && EquippedWeapon != null && !equipStrongestWeapon)
                 {
-                    UnequipWeapon();
+                    if (!PlayerInventory.WeaponIsFull)
+                    {
+                        UnequipWeapon();
+                    }
+                    else
+                    {
+                        Console.WriteLine("\nYour have too many weapons in your inventory.");
+                        Console.Write("Press Enter to continue.");
+                        Console.ReadKey();
+                    }
                 }
                 // Same concept as above, except for potions instead of weapons.
                 else if (userChoice == "P" && PlayerInventory.PotionCount() > 0)
@@ -322,6 +341,7 @@ namespace DungeonExplorer
                     {
                         EquipWeapon(PlayerInventory.StrongestWeapon);
                         Console.WriteLine($"\nAuto-equipped {EquippedWeapon.Name}.");
+                        Console.Write("Press Enter to continue.");
                         Console.ReadKey();
                     }
                 }
@@ -391,11 +411,10 @@ namespace DungeonExplorer
         /// <param name="weapon">The weapon that is added to the player's inventory.</param>
         private void WeaponAdded(Weapon weapon)
         {
-            if (equipStrongestWeapon && weapon == PlayerInventory.StrongestWeapon && weapon.Damage > EquippedWeapon.Damage)
+            if ((equipStrongestWeapon && weapon == PlayerInventory.StrongestWeapon && weapon.Damage > EquippedWeapon.Damage) || EquippedWeapon == null)
             {
                 EquipWeapon(weapon);
                 Console.WriteLine($"\nAuto-equipped {weapon.Name}.");
-                Console.ReadKey();
             }
         }
     }
@@ -495,12 +514,39 @@ namespace DungeonExplorer
         public Dragon()
         {
             Name = "Dragon";
-            Stats.ModifyMaxHealth(50);
+            Stats.ModifyMaxHealth(5);
             Stats.ModifyCurrentHealth(MaxHealth);
             Stats.ModifyAttack(15);
             Stats.ModifySpeed(1);
             Stats.ModifyLevel(10);
         }
     }
-
+    /// <summary>
+    /// A special type of monster that is used to represent traps.
+    /// This monster is not fought and should be removed after it damages the player.
+    /// </summary>
+    public class Trap : Monster
+    {
+        protected override bool CanFlee => false;
+        public Trap()
+        {
+            Name = "Trap";
+            Stats.ModifyMaxHealth(0);
+            Stats.ModifyCurrentHealth(0);
+            Stats.ModifyAttack(dice.Next(1,6));
+            Stats.ModifySpeed(0);
+            Stats.ModifyLevel(0);
+        }
+        // Traps do not use potions.
+        public override void UsePotion(Potion potion)
+        {
+            return;
+        }
+        // Traps activates and damages target for a set amount.
+        public override void AttackTarget(Creature target)
+        {
+            target.TakeDamage(Attack);
+            return;
+        }
+    }
 }
