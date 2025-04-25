@@ -118,10 +118,10 @@ namespace DungeonExplorer
             }
             if (XP >= Level && isPlayer)
             {
-                while (XP > Level)
+                while (XP >= Level)
                 {
-                    LevelUp();
                     XP -= Level;
+                    LevelUp();
                 }
             }
         }

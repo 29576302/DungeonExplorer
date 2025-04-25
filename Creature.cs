@@ -514,7 +514,7 @@ namespace DungeonExplorer
         public Dragon()
         {
             Name = "Dragon";
-            Stats.ModifyMaxHealth(5);
+            Stats.ModifyMaxHealth(50);
             Stats.ModifyCurrentHealth(MaxHealth);
             Stats.ModifyAttack(15);
             Stats.ModifySpeed(1);
