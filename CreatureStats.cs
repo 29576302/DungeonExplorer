@@ -125,6 +125,9 @@ namespace DungeonExplorer
                 }
             }
         }
+        /// <summary>
+        /// Mehtod used to level up Player. Increases MaxHealth and Attack and resets CurrentHealth.
+        /// </summary>
         private void LevelUp()
         {
             Level++;

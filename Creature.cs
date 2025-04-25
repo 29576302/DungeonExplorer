@@ -63,12 +63,14 @@ namespace DungeonExplorer
     {
         public Weapon EquippedWeapon { get; private set; }
         public Inventory PlayerInventory = new Inventory();
+        private bool equipStrongestWeapon = false;
         /// <summary>
         /// Constructor for the Player class.
         /// </summary>
         public Player(string name, int health, int attack, int level) : base(name, health, attack, level)
         {
             Stats = new CreatureStats(health, attack, 0, level, true);
+            PlayerInventory.WeaponAdded += WeaponAdded;
         }
         /// <summary>
         /// UsePotion method allows the player to use a potion from their inventory.
@@ -121,11 +123,11 @@ namespace DungeonExplorer
                 Console.WriteLine(PlayerInventory.Contents());
                 // Displays and determines what actions the user can take.
                 string actions = "Actions:";
-                if (PlayerInventory.WeaponCount() > 0)
+                if (PlayerInventory.WeaponCount() > 0 && !equipStrongestWeapon)
                 {
                     actions += "\nW) Equip Weapon";
                 }
-                if (EquippedWeapon != null)
+                if (EquippedWeapon != null && !equipStrongestWeapon)
                 {
                     actions += "\nU) Unequip Weapon";
                 }
@@ -133,12 +135,16 @@ namespace DungeonExplorer
                 {
                     actions += "\nP) Drink Potion";
                 }
+                if (EquippedWeapon != null || PlayerInventory.WeaponCount() > 0)
+                {
+                    actions += $"\nA) Auto-Equip Strongest Weapon ({(equipStrongestWeapon ? "ON" : "OFF")})";
+                }
                 actions += "\nQ) Quit Menu";
                 Console.WriteLine(actions);
                 Console.Write(">");
                 // Takes and validates user input, breaks from while true loop when a valid input is given.
                 string userChoice = Console.ReadLine().ToUpper().Trim();
-                if (userChoice == "W" && PlayerInventory.WeaponCount() > 0)
+                if (userChoice == "W" && PlayerInventory.WeaponCount() > 0 && !equipStrongestWeapon)
                 {
                     // While loop until user enters a valid input.
                     while (true)
@@ -174,7 +180,7 @@ namespace DungeonExplorer
                     }
                 }
                 // The player is only able to unequip a weapon if they have one equipped.
-                else if (userChoice == "U" && EquippedWeapon != null)
+                else if (userChoice == "U" && EquippedWeapon != null && !equipStrongestWeapon)
                 {
                     UnequipWeapon();
                 }
@@ -209,6 +215,16 @@ namespace DungeonExplorer
                                 Console.WriteLine("Please enter a valid input.");
                             }
                         }
+                    }
+                }
+                else if (userChoice == "A" && (EquippedWeapon != null || PlayerInventory.WeaponCount() > 0))
+                {
+                    equipStrongestWeapon = !equipStrongestWeapon;
+                    if (equipStrongestWeapon && PlayerInventory.WeaponCount() > 0)
+                    {
+                        EquipWeapon(PlayerInventory.StrongestWeapon);
+                        Console.WriteLine($"\nAuto-equipped {EquippedWeapon.Name}.");
+                        Console.ReadKey();
                     }
                 }
                 else if (userChoice == "Q")
@@ -269,6 +285,20 @@ namespace DungeonExplorer
         public void GainXP(int xp)
         {
             Stats.ModifyXP(xp);
+        }
+        /// <summary>
+        /// When a weapon is added to the player's inventory,
+        /// this method checks if the strongest weapon needs to be equipped.
+        /// </summary>
+        /// <param name="weapon">The weapon that is added to the player's inventory.</param>
+        private void WeaponAdded(Weapon weapon)
+        {
+            if (equipStrongestWeapon && weapon == PlayerInventory.StrongestWeapon && weapon.Damage > EquippedWeapon.Damage)
+            {
+                EquipWeapon(weapon);
+                Console.WriteLine($"\nAuto-equipped {weapon.Name}.");
+                Console.ReadKey();
+            }
         }
     }
     /// <summary>

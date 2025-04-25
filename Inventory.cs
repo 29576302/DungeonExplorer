@@ -13,6 +13,18 @@ namespace DungeonExplorer
     {
         private List<Weapon> weapons = new List<Weapon>();
         private List<Potion> potions = new List<Potion>();
+        public event Action<Weapon> WeaponAdded; // Used to notify Player when a weapon is added to the inventory.
+        public Weapon StrongestWeapon
+        {
+            get
+            {
+                if (weapons.Count == 0)
+                {
+                    return null;
+                }
+                return weapons.OrderByDescending(w => w.Damage).First();
+            }
+        }
         // Methods for accessing information about inventory contents.
         public int WeaponCount()
         {
@@ -33,6 +45,7 @@ namespace DungeonExplorer
         public void AddWeapon(Weapon weapon)
         {
             weapons.Add(weapon);
+            WeaponAdded?.Invoke(weapon);
         }
         public void AddPotion(Potion potion)
         {

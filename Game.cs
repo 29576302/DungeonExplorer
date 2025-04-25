@@ -110,8 +110,8 @@ namespace DungeonExplorer
                         {
                             Console.Write(">");
                             int potionChoice = Convert.ToInt32(Console.ReadLine());
-                            player.PlayerInventory.AddPotion(currentRoom.Potions[potionChoice - 1]);
                             Console.WriteLine($"You take the {currentRoom.Potions[potionChoice - 1].Name}.");
+                            player.PlayerInventory.AddPotion(currentRoom.Potions[potionChoice - 1]);
                             currentRoom.RemovePotion(potionChoice - 1);
                             break;
                         }
@@ -133,8 +133,8 @@ namespace DungeonExplorer
                 // the user is only allowed to take a weapon if one is present in the room (and if the monster is dead).
                 else if (userChoice == "W" && currentRoom.Weapon != null && currentRoom.Monster == null)
                 {
-                    player.PlayerInventory.AddWeapon(currentRoom.Weapon);
                     Console.WriteLine($"You take the {currentRoom.Weapon.Name}.");
+                    player.PlayerInventory.AddWeapon(currentRoom.Weapon);
                     currentRoom.RemoveWeapon();
                     break;
                 }
