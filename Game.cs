@@ -95,37 +95,44 @@ namespace DungeonExplorer
                 // The user is only allowed to take a potion if there is one or more in the room (and if the monster is dead).
                 if (userChoice == "P" && currentRoom.Potions != null && currentRoom.Monster == null)
                 {
-                    Console.WriteLine("Which potion would you like to take?");
-                    // Generates a list of available potions in the room.
-                    string availablePotions = "";
-                    for (int i = 0; i < currentRoom.Potions.Count; i++)
+                    if (!player.PlayerInventory.PotionIsFull)
                     {
-                        availablePotions += $"{i + 1}) {currentRoom.Potions[i].Name}\n";
+                        Console.WriteLine("Which potion would you like to take?");
+                        // Generates a list of available potions in the room.
+                        string availablePotions = "";
+                        for (int i = 0; i < currentRoom.Potions.Count; i++)
+                        {
+                            availablePotions += $"{i + 1}) {currentRoom.Potions[i].Name}\n";
+                        }
+                        Console.Write(availablePotions);
+                        // Try catch block to validate user input.
+                        while (true)
+                        {
+                            try
+                            {
+                                Console.Write(">");
+                                int potionChoice = Convert.ToInt32(Console.ReadLine());
+                                Console.WriteLine($"You take the {currentRoom.Potions[potionChoice - 1].Name}.");
+                                player.PlayerInventory.AddPotion(currentRoom.Potions[potionChoice - 1]);
+                                currentRoom.RemovePotion(potionChoice - 1);
+                                break;
+                            }
+                            catch (Exception ex)
+                            {
+                                if (ex is FormatException || ex is ArgumentOutOfRangeException)
+                                {
+                                    Console.WriteLine("Please enter a valid input.");
+                                }
+                                else
+                                {
+                                    throw;
+                                }
+                            }
+                        }
                     }
-                    Console.Write(availablePotions);
-                    // Try catch block to validate user input.
-                    while (true)
+                    else
                     {
-                        try
-                        {
-                            Console.Write(">");
-                            int potionChoice = Convert.ToInt32(Console.ReadLine());
-                            Console.WriteLine($"You take the {currentRoom.Potions[potionChoice - 1].Name}.");
-                            player.PlayerInventory.AddPotion(currentRoom.Potions[potionChoice - 1]);
-                            currentRoom.RemovePotion(potionChoice - 1);
-                            break;
-                        }
-                        catch (Exception ex)
-                        {
-                            if (ex is FormatException || ex is ArgumentOutOfRangeException)
-                            {
-                                Console.WriteLine("Please enter a valid input.");
-                            }
-                            else
-                            {
-                                throw;
-                            }
-                        }
+                        Console.WriteLine("You are carrying too many potions to take any more.");
                     }
                     break;
                 }
@@ -133,9 +140,16 @@ namespace DungeonExplorer
                 // the user is only allowed to take a weapon if one is present in the room (and if the monster is dead).
                 else if (userChoice == "W" && currentRoom.Weapon != null && currentRoom.Monster == null)
                 {
-                    Console.WriteLine($"You take the {currentRoom.Weapon.Name}.");
-                    player.PlayerInventory.AddWeapon(currentRoom.Weapon);
-                    currentRoom.RemoveWeapon();
+                    if (!player.PlayerInventory.WeaponIsFull)
+                    {
+                        Console.WriteLine($"You take the {currentRoom.Weapon.Name}.");
+                        player.PlayerInventory.AddWeapon(currentRoom.Weapon);
+                        currentRoom.RemoveWeapon();
+                    }
+                    else
+                    {
+                        Console.WriteLine($"You are carrying too many weapons to take the {currentRoom.Weapon.Name}.");
+                    }
                     break;
                 }
                 // The user is only allowed to attack the Monster if it is present in the room.

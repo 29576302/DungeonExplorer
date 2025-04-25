@@ -13,6 +13,10 @@ namespace DungeonExplorer
     {
         private List<Weapon> weapons = new List<Weapon>();
         private List<Potion> potions = new List<Potion>();
+        private const int maxWeapons = 5;
+        private const int maxPotions = 10;
+        public bool WeaponIsFull => weapons.Count >= maxWeapons;
+        public bool PotionIsFull => potions.Count >= maxPotions;
         public event Action<Weapon> WeaponAdded; // Used to notify Player when a weapon is added to the inventory.
         public Weapon StrongestWeapon
         {
@@ -44,12 +48,18 @@ namespace DungeonExplorer
         }
         public void AddWeapon(Weapon weapon)
         {
-            weapons.Add(weapon);
-            WeaponAdded?.Invoke(weapon);
+            if (!WeaponIsFull)
+            {
+                weapons.Add(weapon);
+                WeaponAdded?.Invoke(weapon);
+            }
         }
         public void AddPotion(Potion potion)
         {
-            potions.Add(potion);
+            if (!PotionIsFull)
+            {
+                potions.Add(potion);
+            }
         }
         public void RemoveWeapon(Weapon weapon)
         {

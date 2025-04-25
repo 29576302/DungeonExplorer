@@ -135,6 +135,10 @@ namespace DungeonExplorer
                 {
                     actions += "\nP) Drink Potion";
                 }
+                if (PlayerInventory.PotionCount() > 0 || PlayerInventory.WeaponCount() > 0)
+                {
+                    actions += "\nD) Drop Items";
+                }
                 if (EquippedWeapon != null || PlayerInventory.WeaponCount() > 0)
                 {
                     actions += $"\nA) Auto-Equip Strongest Weapon ({(equipStrongestWeapon ? "ON" : "OFF")})";
@@ -215,6 +219,100 @@ namespace DungeonExplorer
                                 Console.WriteLine("Please enter a valid input.");
                             }
                         }
+                    }
+                }
+                // Drop items option.
+                else if (userChoice == "D" && (PlayerInventory.PotionCount() > 0 || PlayerInventory.WeaponCount() > 0))
+                {
+                    // The option to drop an item type is only available if the player has at least one item of the type.
+                    actions = "";
+                    if (PlayerInventory.PotionCount() > 0)
+                    {
+                        actions += "\nP) Drop Potions";
+                    }
+                    if (PlayerInventory.WeaponCount() > 0)
+                    {
+                        actions += "\nW) Drop Weapons";
+                    }
+                    actions += "\nQ) Quit";
+                    Console.WriteLine(actions);
+                    // While loop until user enters a valid input.
+                    while (true)
+                    {
+                        Console.Write(">");
+                        userChoice = Console.ReadLine().ToUpper().Trim();
+                        if (userChoice == "Q")
+                        {
+                            break;
+                        }
+                        // The player is only able to drop a potion if they have at least one in their inventory.
+                        else if (userChoice == "P" && PlayerInventory.PotionCount() > 0)
+                        {
+                            Console.WriteLine("Please select the potion you'd like to drop.");
+                            // While loop and try catch to handle invalid inputs.
+                            while (true)
+                            {
+                                Console.Write(">");
+                                userChoice = Console.ReadLine().Trim();
+                                try
+                                {
+                                    int potionChoice = Convert.ToInt32(userChoice) - 1;
+                                    if (0 <= potionChoice && potionChoice < PlayerInventory.PotionCount())
+                                    {
+                                        Console.WriteLine($"{PlayerInventory.GetPotion(potionChoice).Name} dropped.");
+                                        PlayerInventory.RemovePotion(PlayerInventory.GetPotion(potionChoice));
+                                        Console.Write("Press Enter to continue.");
+                                        Console.ReadKey();
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Your input was out of range.");
+                                    }
+                                }
+                                catch (FormatException)
+                                {
+                                    Console.WriteLine("Please enter a valid input.");
+                                }
+                            }
+                            break;
+                        }
+                        // Same as above, but for weapons.
+                        else if (userChoice == "W" && PlayerInventory.WeaponCount() > 0)
+                        {
+                            Console.WriteLine("Please select the weapon you'd like to drop.");
+                            while (true)
+                            {
+                                Console.Write(">");
+                                userChoice = Console.ReadLine().Trim();
+                                try
+                                {
+                                    int weaponChoice = Convert.ToInt32(userChoice) - 1;
+                                    if (0 <= weaponChoice && weaponChoice < PlayerInventory.WeaponCount())
+                                    {
+                                        Console.WriteLine($"{PlayerInventory.GetWeapon(weaponChoice).Name} dropped.");
+                                        PlayerInventory.RemoveWeapon(PlayerInventory.GetWeapon(weaponChoice));
+                                        Console.Write("Press Enter to continue.");
+                                        Console.ReadKey();
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Your input was out of range.");
+                                    }
+                                }
+                                catch (FormatException)
+                                {
+                                    Console.WriteLine("Please enter a valid input.");
+                                }
+                            }
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Please enter a valid input.");
+                        }
+
                     }
                 }
                 else if (userChoice == "A" && (EquippedWeapon != null || PlayerInventory.WeaponCount() > 0))
