@@ -12,8 +12,8 @@ namespace DungeonExplorer
     [Serializable]
     public abstract class Item : IDescribable
     {
-        private string baseName;
-        public string Name => baseName + $" ({Description})";
+        public string BaseName;
+        public string Name => BaseName + $" ({Description})";
         public int Damage { get; private set; }
         public string Description { get; protected set; }
         /// <summary>
@@ -23,7 +23,7 @@ namespace DungeonExplorer
         /// <param name="damage">The amount of damage the item adds to the player's attack.</param>
         public Item(string name, int damage)
         {
-            baseName = name;
+            BaseName = name;
             Damage = damage;
         }
         /// <summary>

@@ -100,9 +100,9 @@ namespace DungeonExplorer
         public void ModifyLevel(int amount)
         {
             Level += amount;
-            if (Level < 0)
+            if (Level < 1)
             {
-                Level = 0;
+                Level = 1;
             }
         }
         /// <summary>
@@ -136,7 +136,6 @@ namespace DungeonExplorer
             Attack += (int)(baseAttack * Level/10.0f);
             CurrentHealth = MaxHealth;
             Console.WriteLine($"\nYou've leveled up! You are now level {Level}.");
-            Console.ReadKey();
         }
     }
 }

@@ -14,6 +14,10 @@ namespace DungeonExplorer
         /// </summary>
         static void Main(string[] args)
         {
+            Test test = new Test();
+            test.TestAll();
+            Console.Write("\n\n\nPress Enter to continue.");
+            Console.ReadKey();
             Console.WriteLine("========Welcome to DUNGEON EXPLORER!========\n"); // Game title
             Console.WriteLine("Options:\n1) New Game\n2) Load Game\n3) Exit");
             while (true)

@@ -50,7 +50,7 @@ namespace DungeonExplorer
         {
             int damage = (Attack * dice.Next(1, 21)) / 20;
             Console.WriteLine($"The attack deals {damage} damage.");
-            target.Stats.ModifyCurrentHealth(-damage);
+            target.TakeDamage(damage);
         }
         /// <summary>
         /// Used by Traps to deal damage to the target.

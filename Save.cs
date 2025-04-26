@@ -16,7 +16,7 @@ namespace DungeonExplorer
     {
         /// <summary>
         /// Method used to save the game to a .dat file.
-        /// BinaryFormatter is used to serialize the game state into a storeable format.
+        /// BinaryFormatter is used to serialise the game state into a storeable format.
         /// </summary>
         /// <param name="gameState">Game state to be saved.</param>
         /// <param name="path">Where the game will be saved.</param>
@@ -30,7 +30,7 @@ namespace DungeonExplorer
             }
         }
         /// <summary>
-        /// Method used to load/deserialize the game from a .dat file.
+        /// Method used to load/deserialise the game from a .dat file.
         /// </summary>
         /// <param name="path">Path to the .dat file.</param>
         public static Game LoadGame(string path)
