@@ -5,6 +5,7 @@ namespace DungeonExplorer
     /// <summary>
     /// This class is used to encapsulate a Creature's stats.
     /// </summary>
+    [Serializable]
     public class CreatureStats
     {
         public int MaxHealth { get; private set; }

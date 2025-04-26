@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace DungeonExplorer
@@ -6,6 +7,7 @@ namespace DungeonExplorer
     /// <summary>
     /// This class is used to create rooms that the player explores.
     /// </summary>
+    [Serializable]
     public class Room : IDescribable
     {
         public Monster Monster { get; private set; }

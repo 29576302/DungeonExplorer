@@ -3,12 +3,14 @@ using System.Media;
 using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
+using System.IO;
 
 namespace DungeonExplorer
 {
     /// <summary>
     /// This class contains the Main method and is used to run the game. It also controls certain player actions.
     /// </summary>
+    [Serializable]
     internal class Game
     {
         private Player player;
@@ -64,7 +66,7 @@ namespace DungeonExplorer
                 }
                 else
                 {
-                    Console.WriteLine($"You have {player.CurrentHealth} health remaining.");
+                    Console.WriteLine($"\nYou have {player.CurrentHealth} health remaining.");
                     Console.Write("Press Enter to continue.");
                     Console.ReadKey();
                     Console.WriteLine();
@@ -73,7 +75,7 @@ namespace DungeonExplorer
             // Displays the room description.
             Console.WriteLine($"\n{currentRoom.GetDescription()}");
             // Calculates and displays the player's available actions.
-            string actions = "\nActions: \nM) Menu";
+            string actions = "\nActions:\nM) Menu\nS) Save game";
             if (currentRoom.Monster == null)
             {
                 if (currentRoom.IsBossRoom && currentRoom.Monster == null)
@@ -190,6 +192,16 @@ namespace DungeonExplorer
                 {
                     // The map visualiser is passed to the menu, so the player can see the rooms they have explored.
                     player.Menu(exploredRooms.GetMap(currentRoom));
+                    break;
+                }
+                // Saves the game to a .dat file.
+                else if (userChoice == "S")
+                {
+                    // Path generated using BaseDirectory to ensure consistency across different machines.
+                    string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "savegame.dat");
+                    // Saves this instance of Game.
+                    Save.SaveGame(this, path);
+                    Console.WriteLine("Game successfully saved.");
                     break;
                 }
                 // Generates a new room and assigns it to CurrentRoom (if there is no monster).
@@ -423,7 +435,7 @@ namespace DungeonExplorer
             }
             else
             {
-                Console.WriteLine($"You have {player.CurrentHealth} health remaining.");
+                Console.WriteLine($"\nYou have {player.CurrentHealth} health remaining.");
             }
         }
     }

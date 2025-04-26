@@ -9,6 +9,7 @@ namespace DungeonExplorer
     /// <summary>
     /// This class forms the base of the Player and Monster classes.
     /// </summary>
+    [Serializable]
     public abstract class Creature : ICanAttack
     {
         // Creature's stats are encapsulated in the CreatureStats class. Values here point to the stats.
@@ -68,6 +69,7 @@ namespace DungeonExplorer
     /// <summary>
     /// Player class inherits from Creature. This class is used to represent the player character.
     /// </summary>
+    [Serializable]
     public class Player : Creature
     {
         public Weapon EquippedWeapon { get; private set; }
@@ -421,6 +423,7 @@ namespace DungeonExplorer
     /// <summary>
     /// Monster subclass
     /// </summary>
+    [Serializable]
     public abstract class Monster : Creature
     {
         public bool Fled {get; protected set; }
@@ -468,7 +471,7 @@ namespace DungeonExplorer
             }
         }
     }
-
+    [Serializable]
     public class Goblin : Monster
     {
         protected override bool CanFlee => true;
@@ -482,6 +485,7 @@ namespace DungeonExplorer
             Stats.ModifyLevel(1);
         }
     }
+    [Serializable]
     public class Orc : Monster
     {
         protected override bool CanFlee => true;
@@ -495,6 +499,7 @@ namespace DungeonExplorer
             Stats.ModifyLevel(3);
         }
     }
+    [Serializable]
     public class Troll : Monster
     {
         protected override bool CanFlee => false;
@@ -508,6 +513,7 @@ namespace DungeonExplorer
             Stats.ModifyLevel(5);
         }
     }
+    [Serializable]
     public class Dragon : Monster
     {
         protected override bool CanFlee => false;
@@ -525,6 +531,7 @@ namespace DungeonExplorer
     /// A special type of monster that is used to represent traps.
     /// This monster is not fought and should be removed after it damages the player.
     /// </summary>
+    [Serializable]
     public class Trap : Monster
     {
         protected override bool CanFlee => false;

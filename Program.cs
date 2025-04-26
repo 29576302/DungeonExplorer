@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,27 +15,60 @@ namespace DungeonExplorer
         static void Main(string[] args)
         {
             Console.WriteLine("========Welcome to DUNGEON EXPLORER!========\n"); // Game title
-            // Initializing player
-            Console.WriteLine("You wake up alone in a dark dungeon. You don't remember who you are or how you got here.");
-            string playerName = "";
-            while (playerName == "")
+            Console.WriteLine("Options:\n1) New Game\n2) Load Game\n3) Exit");
+            while (true)
             {
-                Console.Write("What will you call yourself?\n>");
-                playerName = Console.ReadLine().Trim();
+                Console.Write(">");
+                string userInput = Console.ReadLine();
+                // New game
+                if (userInput == "1")
+                {
+                    // Initializing player
+                    Console.WriteLine("\nYou wake up alone in a dark dungeon. You don't remember who you are or how you got here.");
+                    string playerName = "";
+                    while (playerName == "")
+                    {
+                        Console.Write("What will you call yourself?\n>");
+                        playerName = Console.ReadLine().Trim();
+                    }
+                    Player player = new Player(playerName, 30, 1, 1);
+                    // Initializing starting room
+                    Room startingRoom = new Room(null, new List<Potion>() { new Potion("Potion", 0, 10, 0) }, new Weapon("Sword", 10, 1), false);
+                    // Initializing and starting game
+                    Game game = new Game(player, startingRoom);
+                    game.Start();
+                    break;
+                }
+                // Loads game from savegame.dat
+                else if (userInput == "2")
+                {
+                    // Path generated using BaseDirectory to ensure consistency across different machines.
+                    string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "savegame.dat");
+                    Game game = Save.LoadGame(path);
+                    Console.WriteLine("Loading saved game...");
+                    // If the game was not found, the user is returned to the menu.
+                    if (game == null)
+                    {
+                        Console.WriteLine("No saved game found.");
+                        Console.WriteLine("Press Enter to continue.");
+                        Console.ReadKey();
+                        continue;
+                    }
+                    Console.WriteLine("Game successfully loaded.");
+                    Console.WriteLine("Press Enter to continue.");
+                    Console.ReadKey();
+                    game.Start();
+                    return;
+                }
+                else if (userInput == "3")
+                {
+                    return;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please try again.");
+                }
             }
-            Player player = new Player(playerName, 30, 1, 1);
-            // Initializing starting room
-            Room startingRoom = new Room(null, new List<Potion>(){ new Potion("Potion", 0, 10, 0) }, new Weapon("Sword", 10, 1), false);
-            // Initializing and starting game
-            Game game = new Game(player, startingRoom);
-            /*
-            Test test = new Test();
-            test.TestHealth();
-            test.TestInventory();
-            test.TestRoom();
-            test.TestItems();
-            */
-            game.Start();
             Console.ReadKey();
         }
     }

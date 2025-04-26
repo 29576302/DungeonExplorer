@@ -9,6 +9,7 @@ namespace DungeonExplorer
     /// <summary>
     /// This class forms the base of the Potion and Weapon classes.
     /// </summary>
+    [Serializable]
     public abstract class Item : IDescribable
     {
         private string baseName;
@@ -33,6 +34,7 @@ namespace DungeonExplorer
     /// <summary>
     /// This class is used to create potions that grant various bonuses to Creatures.
     /// </summary>
+    [Serializable]
     public class Potion : Item
     {
         public int HealthRestore { get; private set; }
@@ -80,6 +82,10 @@ namespace DungeonExplorer
             }
         }
     }
+    /// <summary>
+    /// This class is used to create weapons for the player to use.
+    /// </summary>
+    [Serializable]
     public class Weapon : Item
     {
         public float Speed { get; private set; }

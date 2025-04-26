@@ -9,6 +9,7 @@ namespace DungeonExplorer
     /// <summary>
     /// Used to store explored rooms and their contents.
     /// </summary>
+    [Serializable]
     class Map
     {
         private readonly List<Room> rooms;

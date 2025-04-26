@@ -9,6 +9,7 @@ namespace DungeonExplorer
     /// <summary>
     /// This class is used to store and manage the player's items.
     /// </summary>
+    [Serializable]
     public class Inventory
     {
         private List<Weapon> weapons = new List<Weapon>();
