@@ -47,6 +47,7 @@ namespace DungeonExplorer
         {
             return potions[index];
         }
+        // Methods to add and remove items from the inventory.
         public void AddWeapon(Weapon weapon)
         {
             if (!WeaponIsFull)

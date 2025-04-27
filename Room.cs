@@ -32,7 +32,7 @@ namespace DungeonExplorer
             IsBossRoom = isBossRoom;
         }
         /// <summary>
-        /// Generates a description of the room.
+        /// Generates a description of the room. Written to description.
         /// </summary>
         public void CreateDescription()
         {
@@ -91,6 +91,9 @@ namespace DungeonExplorer
         {
             Monster = null;
         }
+        /// <summary>
+        /// Returns true if the room is empty.
+        /// </summary>
         public bool IsEmpty()
         {
             return Monster == null && Potions == null && Weapon == null;

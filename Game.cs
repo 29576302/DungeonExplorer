@@ -409,16 +409,18 @@ namespace DungeonExplorer
                         monsterCanAttack = !monsterCanAttack;
                     }
                 }
-                // If the monster is dead, the monster is removed from the room.
+                // If the monster dies or flees, the monster is removed from the room.
                 else
                 {
                     // If the monster fled, the player does not get this victory message.
                     if (!monster.Fled)
                     {
+                        // If the monster dies, the player gains XP.
                         Console.WriteLine($"\nYou defeat the {monster.Name}!");
                         Console.WriteLine($"You gain {monster.Level} XP!");
                         player.GainXP(monster.Level);
                     }
+                    // If the room is a boss room, the player finds the exit.
                     if (currentRoom.IsBossRoom)
                     {
                         Console.WriteLine("\nYou find an exit behind the treasure!");

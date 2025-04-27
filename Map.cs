@@ -26,8 +26,7 @@ namespace DungeonExplorer
         /// <summary>
         /// Returns the room before the one taken as an input. Raises an error if the room is not in the list.
         /// </summary>
-        /// <param name="room"></param>
-        /// <returns></returns>
+        /// <param name="room">The room taken as an input.</param>
         public Room LastRoom(Room room)
         {
             //If the room is not in the list, throw an error.
@@ -45,6 +44,10 @@ namespace DungeonExplorer
                 return rooms[rooms.IndexOf(room) - 1];
             }
         }
+        /// <summary>
+        /// Returns the room after the one taken as an input. Raises an error if the room is not in the list.
+        /// </summary>
+        /// <param name="room">The room taken as an input.</param>
         public Room NextRoom(Room room)
         {
             if (!rooms.Contains(room))
@@ -60,6 +63,9 @@ namespace DungeonExplorer
                 return rooms[rooms.IndexOf(room) + 1];
             }
         }
+        /// <summary>
+        /// Returns the newest room in the list of rooms.
+        /// </summary>
         public Room NewestRoom()
         {
             if (rooms.Count > 0)
@@ -71,6 +77,10 @@ namespace DungeonExplorer
                 return null;
             }
         }
+        /// <summary>
+        /// Creates a string representation of the map.
+        /// The room currently occupied is represented using [|], other rooms are represented using [].
+        /// <param name="currentRoom">The room currently occupied.</param>"
         public string GetMap(Room currentRoom)
         {
             if (!rooms.Contains(currentRoom))

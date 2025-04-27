@@ -107,8 +107,9 @@ namespace DungeonExplorer
             Stats.ModifyAttack(potion.Damage);
         }
         /// <summary>
-        /// Menu method allows the player to check stats and use inventory.
+        /// Menu method allows the player to check stats and interact with inventory.
         /// </summary>
+        /// <param name="map"> A visualisation of explored rooms to be displayed for the player.</param>
         public void Menu(string map)
         {
             while (true)
@@ -122,6 +123,7 @@ namespace DungeonExplorer
                 Console.WriteLine($"Attack: {Attack}");
                 Console.WriteLine($"XP: {Stats.XP}/{Level}");
                 Console.WriteLine($"Level: {Level}");
+                // Displays the player's equipped weapon.
                 if (EquippedWeapon == null)
                 {
                     Console.WriteLine("Equipped Weapon: None");
@@ -160,6 +162,8 @@ namespace DungeonExplorer
                 Console.Write(">");
                 // Takes and validates user input, breaks from while true loop when a valid input is given.
                 string userChoice = Console.ReadLine().ToUpper().Trim();
+                // Equip weapon option.
+                // The player is only able to equip a weapon if they have one in their inventory.
                 if (userChoice == "W" && PlayerInventory.WeaponCount() > 0 && !equipStrongestWeapon)
                 {
                     // While loop until user enters a valid input.
@@ -195,6 +199,7 @@ namespace DungeonExplorer
                         }
                     }
                 }
+                // Unequip weapon option.
                 // The player is only able to unequip a weapon if they have one equipped.
                 else if (userChoice == "U" && EquippedWeapon != null && !equipStrongestWeapon)
                 {
@@ -209,7 +214,7 @@ namespace DungeonExplorer
                         Console.ReadKey();
                     }
                 }
-                // Same concept as above, except for potions instead of weapons.
+                // Same concept as "W", except for potions instead of weapons.
                 else if (userChoice == "P" && PlayerInventory.PotionCount() > 0)
                 {
                     while (true)
@@ -275,6 +280,7 @@ namespace DungeonExplorer
                             {
                                 Console.Write(">");
                                 userChoice = Console.ReadLine().Trim();
+                                // Try catch to handle invalid inputs when casting to potionChoice.
                                 try
                                 {
                                     int potionChoice = Convert.ToInt32(userChoice) - 1;
@@ -336,9 +342,11 @@ namespace DungeonExplorer
 
                     }
                 }
+                // Auto-equip strongest weapon option.
                 else if (userChoice == "A" && (EquippedWeapon != null || PlayerInventory.WeaponCount() > 0))
                 {
                     equipStrongestWeapon = !equipStrongestWeapon;
+                    // If equipStrongestWeapon has been turned on, the strongest weapon is equipped.
                     if (equipStrongestWeapon && PlayerInventory.WeaponCount() > 0)
                     {
                         EquipWeapon(PlayerInventory.StrongestWeapon);
@@ -347,6 +355,7 @@ namespace DungeonExplorer
                         Console.ReadKey();
                     }
                 }
+                // Quit menu option.
                 else if (userChoice == "Q")
                 {
                     break;
@@ -471,6 +480,10 @@ namespace DungeonExplorer
             }
         }
     }
+    /// <summary>
+    /// The weakest but fastest common monster in the game.
+    /// Can flee from fights.
+    /// </summary>
     [Serializable]
     public class Goblin : Monster
     {
@@ -485,6 +498,10 @@ namespace DungeonExplorer
             Stats.ModifyLevel(1);
         }
     }
+    /// <summary>
+    /// An all-rounder with decent speed and attack.
+    /// Can flee from fights.
+    /// </summary>
     [Serializable]
     public class Orc : Monster
     {
@@ -499,6 +516,10 @@ namespace DungeonExplorer
             Stats.ModifyLevel(3);
         }
     }
+    /// <summary>
+    /// The strongest but slowest common monster in the game.
+    /// Cannot flee from fights.
+    /// </summary>
     [Serializable]
     public class Troll : Monster
     {
@@ -513,6 +534,10 @@ namespace DungeonExplorer
             Stats.ModifyLevel(5);
         }
     }
+    /// <summary>
+    /// The strongest monster in the game.
+    /// Cannot flee from fights. Used for the 'boss fight'.
+    /// </summary>
     [Serializable]
     public class Dragon : Monster
     {
