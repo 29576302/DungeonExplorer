@@ -51,19 +51,24 @@ namespace DungeonExplorer
                 {
                     // Path generated using BaseDirectory to ensure consistency across different machines.
                     string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "savegame.dat");
-                    Game game = Save.LoadGame(path);
                     Console.WriteLine("Loading saved game...");
+                    Game game = null;
+                    try
+                    {
+                        game = Save.LoadGame(path);
+                        Console.WriteLine("Game successfully loaded.");
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        Console.WriteLine("No saved game found.");
+                    }
+                    Console.WriteLine("Press Enter to continue.");
+                    Console.ReadKey();
                     // If the game was not found, the user is returned to the menu.
                     if (game == null)
                     {
-                        Console.WriteLine("No saved game found.");
-                        Console.WriteLine("Press Enter to continue.");
-                        Console.ReadKey();
                         continue;
                     }
-                    Console.WriteLine("Game successfully loaded.");
-                    Console.WriteLine("Press Enter to continue.");
-                    Console.ReadKey();
                     game.Start();
                     return;
                 }
